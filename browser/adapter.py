@@ -127,6 +127,12 @@ class BrowserAdapter:
         logger.info("Navigating to login page: %s", login_url)
         await self._safe_goto(login_url)
 
+        # Re-check after navigation — _safe_goto may have detected a block
+        if get_state().blocked:
+            logger.error("Login aborted — block detected on login page.")
+            record_login_attempt(success=False)
+            return False
+
         try:
             # --- Fill credentials ---
             # NOTE: These selectors must be verified against the actual portal.
@@ -187,6 +193,10 @@ class BrowserAdapter:
         logger.info("Fetching tee times for %s", date_str)
 
         await self._safe_goto(tee_time_url)
+
+        if get_state().blocked:
+            logger.error("Tee-time fetch aborted — block detected after navigation.")
+            return []
 
         try:
             # Set the date picker — adjust selector to match actual page
