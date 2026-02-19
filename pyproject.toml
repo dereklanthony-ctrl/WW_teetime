@@ -17,5 +17,8 @@ dev = [
     "pytest-asyncio>=0.23.0",
 ]
 
+[tool.setuptools.packages.find]
+include = ["config*", "agents*", "models*", "browser*"]
+
 [project.scripts]
 ww-teetime = "main:main"
