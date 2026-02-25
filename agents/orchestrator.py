@@ -47,6 +47,10 @@ class Orchestrator:
         """Execute one full monitor-book-notify cycle."""
         state = get_state()
 
+        # If the session was flagged dirty (post-block), rotate fingerprint
+        if state.session_dirty and not state.blocked:
+            await self.browser.rotate_session()
+
         if state.blocked:
             self.notification.notify_block_detected()
             logger.info("Orchestrator: cycle skipped due to active security block.")
@@ -87,12 +91,25 @@ class Orchestrator:
             while self._running:
                 await self.run_cycle()
 
-                if get_state().blocked:
-                    logger.error(
-                        "Orchestrator: security block detected — shutting down. "
-                        "Resolve the issue manually, then restart."
-                    )
-                    break
+                state = get_state()
+                if state.blocked:
+                    if state.block_until > 0:
+                        import time as _time
+                        wait_secs = max(state.block_until - _time.time(), 60)
+                        logger.warning(
+                            "Orchestrator: block detected — waiting %.0f minutes "
+                            "then retrying with a fresh session.",
+                            wait_secs / 60,
+                        )
+                        await asyncio.sleep(wait_secs)
+                        # After cooldown, the `blocked` property auto-clears
+                        continue
+                    else:
+                        logger.error(
+                            "Orchestrator: permanent block detected — shutting down. "
+                            "Resolve the issue manually, then restart."
+                        )
+                        break
 
                 interval = settings.min_scan_interval * 60
                 logger.info(

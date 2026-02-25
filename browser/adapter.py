@@ -7,7 +7,9 @@ limits or trigger anti-bot protections.
 
 from __future__ import annotations
 
+import asyncio
 import logging
+import random
 from pathlib import Path
 from datetime import datetime
 
@@ -21,6 +23,7 @@ from browser.safety import (
     record_login_attempt,
     get_state,
 )
+from browser.stealth import apply_stealth, pick_user_agent, pick_viewport
 from config.settings import settings
 from models.tee_time import TeeTimeSlot
 
@@ -44,19 +47,50 @@ class BrowserAdapter:
     # ------------------------------------------------------------------
 
     async def start(self) -> None:
-        """Launch the browser and restore saved session state if available."""
+        """Launch the browser with stealth patches and a realistic fingerprint."""
         self._playwright = await async_playwright().start()
-        self._browser = await self._playwright.chromium.launch(headless=True)
+
+        # Use new headless mode which shares the same rendering pipeline
+        # as headed Chrome — much harder for sites to fingerprint.
+        self._browser = await self._playwright.chromium.launch(
+            headless=settings.headless,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-features=IsolateOrigins,site-per-process",
+                "--disable-infobars",
+                "--no-first-run",
+                "--no-default-browser-check",
+            ],
+        )
+
+        # Build a realistic browser context
+        user_agent = pick_user_agent()
+        viewport = pick_viewport()
+        logger.info("Stealth: UA=%s  viewport=%s", user_agent, viewport)
+
+        context_kwargs: dict = {
+            "user_agent": user_agent,
+            "viewport": viewport,
+            "locale": "en-US",
+            "timezone_id": "America/Chicago",
+            "color_scheme": "light",
+            "java_script_enabled": True,
+            "ignore_https_errors": True,
+        }
 
         storage_path = STATE_DIR / "state.json"
         if storage_path.exists():
             logger.info("Restoring saved browser session state.")
-            self._context = await self._browser.new_context(storage_state=str(storage_path))
-        else:
-            self._context = await self._browser.new_context()
+            context_kwargs["storage_state"] = str(storage_path)
+
+        self._context = await self._browser.new_context(**context_kwargs)
+
+        # Inject stealth scripts that run before every page load
+        if settings.stealth_enabled:
+            await apply_stealth(self._context)
 
         self._page = await self._context.new_page()
-        logger.info("Browser started.")
+        logger.info("Browser started (stealth mode).")
 
     async def stop(self) -> None:
         """Save session state and close the browser cleanly."""
@@ -77,6 +111,41 @@ class BrowserAdapter:
             raise RuntimeError("Browser not started — call start() first.")
         return self._page
 
+    async def rotate_session(self) -> None:
+        """
+        Drop the current browser context and create a fresh one with a new
+        fingerprint (user-agent, viewport).  Called after a block is detected
+        and the cooldown expires — avoids reusing a flagged session.
+        """
+        logger.info("Rotating browser session (new fingerprint).")
+        if self._context:
+            await self._context.close()
+
+        # Delete persisted state so the new session starts clean
+        storage_path = STATE_DIR / "state.json"
+        if storage_path.exists():
+            storage_path.unlink()
+            logger.info("Cleared saved browser state.")
+
+        user_agent = pick_user_agent()
+        viewport = pick_viewport()
+        logger.info("Stealth: new UA=%s  viewport=%s", user_agent, viewport)
+
+        self._context = await self._browser.new_context(
+            user_agent=user_agent,
+            viewport=viewport,
+            locale="en-US",
+            timezone_id="America/Chicago",
+            color_scheme="light",
+            java_script_enabled=True,
+            ignore_https_errors=True,
+        )
+        if settings.stealth_enabled:
+            await apply_stealth(self._context)
+        self._page = await self._context.new_page()
+        self._logged_in = False
+        get_state().session_dirty = False
+
     # ------------------------------------------------------------------
     # Navigation helpers
     # ------------------------------------------------------------------
@@ -96,12 +165,26 @@ class BrowserAdapter:
         detect_block(content)
 
     async def _safe_click(self, selector: str) -> None:
+        """Click with human-like hover → pause → click pattern."""
         await human_delay("click")
-        await self.page.click(selector)
+        el = await self.page.wait_for_selector(selector, timeout=10_000)
+        if el:
+            await el.hover()
+            await asyncio.sleep(random.uniform(0.1, 0.4))
+            await el.click()
+        else:
+            await self.page.click(selector)
 
     async def _safe_fill(self, selector: str, value: str) -> None:
+        """Type character by character with randomized keystroke delays."""
         await human_delay("fill")
-        await self.page.fill(selector, value)
+        el = await self.page.wait_for_selector(selector, timeout=10_000)
+        if el:
+            await el.click()
+            await el.fill("")  # clear first
+            await el.type(value, delay=random.uniform(50, 150))
+        else:
+            await self.page.fill(selector, value)
 
     # ------------------------------------------------------------------
     # Authentication

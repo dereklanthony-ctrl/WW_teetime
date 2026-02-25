@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     max_login_attempts: int = Field(default=3, description="Max login tries before cooldown")
     login_cooldown_minutes: int = Field(default=30, description="Cooldown after max login failures")
 
+    # --- Stealth / anti-detection ---
+    stealth_enabled: bool = Field(default=True, description="Enable browser stealth patches")
+    headless: bool = Field(default=True, description="Run browser headless (set False for debugging)")
+
     @property
     def preferred_days_list(self) -> list[str]:
         return [d.strip().lower() for d in self.preferred_days.split(",")]

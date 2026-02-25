@@ -53,6 +53,9 @@ class SafetyState:
     cooldown_until: float = 0.0
     current_date: str = ""  # reset counters daily
     _blocked: bool = False
+    block_count: int = 0         # how many times we've been blocked today
+    block_until: float = 0.0     # graduated cooldown timestamp
+    session_dirty: bool = False  # True = should clear cookies & rotate UA
 
     daily_counters_reset_fields: list[str] = field(
         default_factory=lambda: ["login_attempts_today", "booking_attempts_today"],
@@ -67,10 +70,18 @@ class SafetyState:
             self.booking_attempts_today = 0
             self.consecutive_errors = 0
             self._blocked = False
+            self.block_count = 0
+            self.block_until = 0.0
+            self.session_dirty = False
             logger.info("Daily safety counters reset.")
 
     @property
     def blocked(self) -> bool:
+        # Auto-unblock after graduated cooldown expires
+        if self._blocked and self.block_until and time.time() >= self.block_until:
+            logger.info("Safety: block cooldown expired — resuming operations.")
+            self._blocked = False
+            self.session_dirty = True  # signal adapter to reset session
         return self._blocked
 
 
@@ -184,15 +195,34 @@ def record_scan() -> None:
 
 
 def detect_block(page_content: str) -> bool:
-    """Scan page text for signs that we've been blocked or challenged."""
+    """Scan page text for signs that we've been blocked or challenged.
+
+    Uses a graduated cooldown: 5 min → 15 min → 30 min → 60 min on
+    repeated blocks.  After the cooldown, the adapter should rotate its
+    fingerprint (clear cookies, pick new UA/viewport).
+    """
     lower = page_content.lower()
     for sig in BLOCK_SIGNATURES:
         if sig in lower:
-            logger.error("Safety: BLOCK DETECTED — page contains '%s'.", sig)
-            get_state()._blocked = True
+            state = get_state()
+            state.block_count += 1
+            # Graduated cooldown: 5, 15, 30, 60 minutes
+            cooldown_minutes = min(5 * (2 ** (state.block_count - 1)), 60)
+            state.block_until = time.time() + cooldown_minutes * 60
+            state._blocked = True
+            state.session_dirty = True
+            logger.error(
+                "Safety: BLOCK DETECTED (signature='%s', block #%d today). "
+                "Cooling down for %d minutes.",
+                sig,
+                state.block_count,
+                cooldown_minutes,
+            )
             return True
     return False
 
 
 def clear_block() -> None:
-    get_state()._blocked = False
+    state = get_state()
+    state._blocked = False
+    state.block_until = 0.0
