@@ -52,16 +52,20 @@ class BrowserAdapter:
 
         # Use new headless mode which shares the same rendering pipeline
         # as headed Chrome — much harder for sites to fingerprint.
-        self._browser = await self._playwright.chromium.launch(
-            headless=settings.headless,
-            args=[
+        launch_kwargs: dict = {
+            "headless": settings.headless,
+            "args": [
                 "--disable-blink-features=AutomationControlled",
                 "--disable-features=IsolateOrigins,site-per-process",
                 "--disable-infobars",
                 "--no-first-run",
                 "--no-default-browser-check",
             ],
-        )
+        }
+        # Allow overriding the Chromium binary path via environment
+        if settings.chromium_path:
+            launch_kwargs["executable_path"] = settings.chromium_path
+        self._browser = await self._playwright.chromium.launch(**launch_kwargs)
 
         # Build a realistic browser context
         user_agent = pick_user_agent()

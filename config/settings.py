@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     # --- Stealth / anti-detection ---
     stealth_enabled: bool = Field(default=True, description="Enable browser stealth patches")
     headless: bool = Field(default=True, description="Run browser headless (set False for debugging)")
+    chromium_path: str = Field(default="", description="Custom path to Chromium binary (leave empty to use Playwright default)")
 
     @property
     def preferred_days_list(self) -> list[str]:
