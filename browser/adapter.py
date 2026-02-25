@@ -94,7 +94,10 @@ class BrowserAdapter:
             await apply_stealth(self._context)
 
         self._page = await self._context.new_page()
-        logger.info("Browser started (stealth mode).")
+        if settings.stealth_enabled:
+            logger.info("Browser started (stealth mode).")
+        else:
+            logger.info("Browser started (stealth DISABLED).")
 
     async def stop(self) -> None:
         """Save session state and close the browser cleanly."""
@@ -183,12 +186,9 @@ class BrowserAdapter:
         """Type character by character with randomized keystroke delays."""
         await human_delay("fill")
         el = await self.page.wait_for_selector(selector, timeout=10_000)
-        if el:
-            await el.click()
-            await el.fill("")  # clear first
-            await el.type(value, delay=random.uniform(50, 150))
-        else:
-            await self.page.fill(selector, value)
+        await el.click()
+        await el.fill("")  # clear first
+        await el.type(value, delay=random.uniform(50, 150))
 
     # ------------------------------------------------------------------
     # Authentication
