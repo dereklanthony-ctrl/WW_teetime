@@ -192,8 +192,10 @@ class BrowserAdapter:
         if response and response.status in (403, 429, 503):
             logger.error("Safety: HTTP %d from %s — possible block.", response.status, url)
 
-        content = await self.page.content()
-        blocked = detect_block(content)
+        # Use visible text only — raw HTML can contain hidden strings
+        # (validation messages, scripts) that cause false positives.
+        visible_text = await self.page.inner_text("body")
+        blocked = detect_block(visible_text)
 
         # Dump debug info when a block is detected so we can inspect
         if blocked:
@@ -260,9 +262,9 @@ class BrowserAdapter:
             await self.page.wait_for_load_state("domcontentloaded", timeout=15_000)
             await human_delay("post-login")
 
-            # Check for block or error
-            content = await self.page.content()
-            if detect_block(content):
+            # Check for block or error (visible text only)
+            visible_text = await self.page.inner_text("body")
+            if detect_block(visible_text):
                 record_login_attempt(success=False)
                 return False
 
@@ -322,8 +324,8 @@ class BrowserAdapter:
             await self.page.wait_for_load_state("domcontentloaded", timeout=15_000)
             await human_delay("tee-sheet-load")
 
-            content = await self.page.content()
-            if detect_block(content):
+            visible_text = await self.page.inner_text("body")
+            if detect_block(visible_text):
                 return []
 
             # Parse the tee-time table rows
@@ -423,12 +425,12 @@ class BrowserAdapter:
             await self.page.wait_for_load_state("domcontentloaded", timeout=15_000)
             await human_delay("post-booking")
 
-            content = await self.page.content()
-            if detect_block(content):
+            visible_text = await self.page.inner_text("body")
+            if detect_block(visible_text):
                 return False
 
-            # Look for confirmation signals
-            lower = content.lower()
+            # Look for confirmation signals in full HTML (may be in elements)
+            lower = (await self.page.content()).lower()
             if any(kw in lower for kw in ["confirmed", "reservation", "booked", "success"]):
                 logger.info("Booking confirmed for %s.", slot)
                 return True
