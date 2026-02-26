@@ -29,6 +29,9 @@ browser_state/
 .DS_Store
 Thumbs.db
 
+# Debug dumps
+debug/
+
 # Logs
 *.log
 logs/

@@ -118,6 +118,32 @@ class BrowserAdapter:
             raise RuntimeError("Browser not started — call start() first.")
         return self._page
 
+    async def _dump_debug(self, label: str, http_status: int | None = None) -> None:
+        """Save page HTML + screenshot to debug/ for inspection."""
+        debug_dir = Path("debug")
+        debug_dir.mkdir(exist_ok=True)
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        prefix = f"{ts}_{label}"
+
+        html_path = debug_dir / f"{prefix}.html"
+        png_path = debug_dir / f"{prefix}.png"
+
+        try:
+            content = await self.page.content()
+            html_path.write_text(content, encoding="utf-8")
+            logger.info("Debug: saved page HTML to %s", html_path)
+        except Exception:
+            logger.debug("Debug: could not save HTML.", exc_info=True)
+
+        try:
+            await self.page.screenshot(path=str(png_path), full_page=True)
+            logger.info("Debug: saved screenshot to %s", png_path)
+        except Exception:
+            logger.debug("Debug: could not save screenshot.", exc_info=True)
+
+        if http_status:
+            logger.info("Debug: HTTP status was %d", http_status)
+
     async def rotate_session(self) -> None:
         """
         Drop the current browser context and create a fresh one with a new
@@ -162,14 +188,16 @@ class BrowserAdapter:
         await human_delay("navigation")
         response = await self.page.goto(url, wait_until="domcontentloaded", timeout=30_000)
 
+        http_status = response.status if response else None
         if response and response.status in (403, 429, 503):
             logger.error("Safety: HTTP %d from %s — possible block.", response.status, url)
-            content = await self.page.content()
-            detect_block(content)
-            return
 
         content = await self.page.content()
-        detect_block(content)
+        blocked = detect_block(content)
+
+        # Dump debug info when a block is detected so we can inspect
+        if blocked:
+            await self._dump_debug("block_detected", http_status)
 
     async def _safe_click(self, selector: str) -> None:
         """Click with human-like hover → pause → click pattern."""
