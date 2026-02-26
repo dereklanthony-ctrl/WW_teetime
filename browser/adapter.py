@@ -221,6 +221,91 @@ class BrowserAdapter:
         await el.type(value, delay=random.uniform(50, 150))
 
     # ------------------------------------------------------------------
+    # DOM discovery helpers
+    # ------------------------------------------------------------------
+
+    async def _find_input_selector(
+        self,
+        id_suffixes: list[str],
+        *,
+        fallback_label: str | None = None,
+        input_type: str | None = None,
+    ) -> str | None:
+        """Find an input whose id ends with one of the given suffixes.
+
+        Falls back to label text or input type if id matching fails.
+        Returns a CSS selector string or None.
+        """
+        # 1. Try id-suffix matching (handles ASP.NET mangled IDs)
+        for suffix in id_suffixes:
+            el = await self.page.query_selector(f"input[id$='{suffix}']")
+            if el:
+                full_id = await el.get_attribute("id")
+                logger.debug("Found input by id-suffix '%s' → #%s", suffix, full_id)
+                return f"#{full_id}"
+
+        # 2. Try matching by associated <label> text
+        if fallback_label:
+            labels = await self.page.query_selector_all("label")
+            for label in labels:
+                text = (await label.inner_text()).strip()
+                if fallback_label.lower() in text.lower():
+                    for_attr = await label.get_attribute("for")
+                    if for_attr:
+                        logger.debug("Found input via label '%s' → #%s", text, for_attr)
+                        return f"#{for_attr}"
+
+        # 3. Fall back to input type
+        if input_type:
+            el = await self.page.query_selector(f"input[type='{input_type}']")
+            if el:
+                full_id = await el.get_attribute("id")
+                if full_id:
+                    logger.debug("Found input by type='%s' → #%s", input_type, full_id)
+                    return f"#{full_id}"
+                return f"input[type='{input_type}']"
+
+        return None
+
+    async def _find_button_selector(
+        self,
+        id_suffixes: list[str],
+        *,
+        fallback_text: str | None = None,
+    ) -> str | None:
+        """Find a button/submit whose id ends with one of the given suffixes.
+
+        Falls back to visible text matching.  Returns a CSS selector or None.
+        """
+        # 1. Try id-suffix matching on <input type=submit> and <button>
+        for suffix in id_suffixes:
+            for tag in ("input", "button", "a"):
+                el = await self.page.query_selector(f"{tag}[id$='{suffix}']")
+                if el:
+                    full_id = await el.get_attribute("id")
+                    logger.debug("Found button by id-suffix '%s' → #%s", suffix, full_id)
+                    return f"#{full_id}"
+
+        # 2. Try matching by visible text
+        if fallback_text:
+            for tag in ("button", "input[type='submit']", "a.btn"):
+                elements = await self.page.query_selector_all(tag)
+                for el in elements:
+                    text = ""
+                    if tag.startswith("input"):
+                        text = await el.get_attribute("value") or ""
+                    else:
+                        text = (await el.inner_text()).strip()
+                    if fallback_text.lower() in text.lower():
+                        full_id = await el.get_attribute("id")
+                        if full_id:
+                            logger.debug("Found button by text '%s' → #%s", text, full_id)
+                            return f"#{full_id}"
+                        return tag
+
+        return None
+
+    # ------------------------------------------------------------------
     # Authentication
     # ------------------------------------------------------------------
 
@@ -250,14 +335,44 @@ class BrowserAdapter:
             record_login_attempt(success=False)
             return False
 
+        # Dump the login page so we can inspect form selectors
+        await self._dump_debug("login_page")
+
         try:
-            # --- Fill credentials ---
-            # NOTE: These selectors must be verified against the actual portal.
-            # ClubHouse Online typically uses ASP.NET WebForms with IDs like
-            # #txtUserName / #txtPassword or similar.  Update as needed.
-            await self._safe_fill("#txtUserName", settings.cho_username)
-            await self._safe_fill("#txtPassword", settings.cho_password)
-            await self._safe_click("#btnLogin")
+            # --- Discover form selectors ---
+            # ASP.NET WebForms generates mangled IDs like
+            # ctl00_ContentPlaceHolder1_txtUserName.  We search the DOM
+            # for inputs whose id ends with the expected suffix.
+            user_sel = await self._find_input_selector(
+                ["txtUserName", "txtUser", "UserName", "txtEmail", "Login"],
+                fallback_label="User Name",
+            )
+            pass_sel = await self._find_input_selector(
+                ["txtPassword", "Password"],
+                fallback_label="Password",
+                input_type="password",
+            )
+            login_btn = await self._find_button_selector(
+                ["btnLogin", "btnSignIn", "LoginButton", "btnSubmit"],
+                fallback_text="Login",
+            )
+
+            if not user_sel or not pass_sel or not login_btn:
+                logger.error(
+                    "Could not locate login form fields "
+                    "(user=%s, pass=%s, btn=%s).",
+                    user_sel, pass_sel, login_btn,
+                )
+                record_login_attempt(success=False)
+                return False
+
+            logger.info(
+                "Login selectors: user=%s, pass=%s, btn=%s",
+                user_sel, pass_sel, login_btn,
+            )
+            await self._safe_fill(user_sel, settings.cho_username)
+            await self._safe_fill(pass_sel, settings.cho_password)
+            await self._safe_click(login_btn)
 
             await self.page.wait_for_load_state("domcontentloaded", timeout=15_000)
             await human_delay("post-login")
