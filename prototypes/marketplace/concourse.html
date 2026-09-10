@@ -1,0 +1,1155 @@
+<title>Halden Concourse</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#EBEEE9; --surface:#FFFFFF; --surface-2:#F5F7F2; --surface-3:#E3E7DE;
+  --ink:#11161A; --ink-2:#3E464C; --ink-3:#6E777D;
+  --line:#D6DBD2; --line-2:#C2C8BC;
+  --focus:#B87410;
+  --api:#1B5FA8; --agent:#BF3B2E; --tool:#6D4AA8; --data:#1E7A4C;
+  --api-bg:#E9F0F8; --agent-bg:#FAECEA; --tool-bg:#F1ECFA; --data-bg:#E6F3EB;
+  --warn:#845410; --warn-bg:#FAF0DC;
+  --stop:#8B2E25; --stop-bg:#F8E9E7;
+  --ok:#1C6541; --ok-bg:#E5F1E9;
+  --r:4px;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --disp:"Archivo","IBM Plex Sans",-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1211; --surface:#161B19; --surface-2:#1B211F; --surface-3:#242B28;
+    --ink:#E9EEE9; --ink-2:#AFB8B3; --ink-3:#828C87;
+    --line:#2A312E; --line-2:#3A423E;
+    --focus:#E0A63C;
+    --api:#6BA6E0; --agent:#E38278; --tool:#AC94DF; --data:#5CBB88;
+    --api-bg:#132030; --agent-bg:#2A1917; --tool-bg:#211A31; --data-bg:#11261C;
+    --warn:#DCA84B; --warn-bg:#2A2113;
+    --stop:#E58B80; --stop-bg:#2B1714;
+    --ok:#63BE8D; --ok-bg:#11261C;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1211; --surface:#161B19; --surface-2:#1B211F; --surface-3:#242B28;
+  --ink:#E9EEE9; --ink-2:#AFB8B3; --ink-3:#828C87;
+  --line:#2A312E; --line-2:#3A423E;
+  --focus:#E0A63C;
+  --api:#6BA6E0; --agent:#E38278; --tool:#AC94DF; --data:#5CBB88;
+  --api-bg:#132030; --agent-bg:#2A1917; --tool-bg:#211A31; --data-bg:#11261C;
+  --warn:#DCA84B; --warn-bg:#2A2113;
+  --stop:#E58B80; --stop-bg:#2B1714;
+  --ok:#63BE8D; --ok-bg:#11261C;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-0.015em;margin:0;text-wrap:balance}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:18px;padding:0 20px;height:54px}
+.brand{display:flex;align-items:baseline;gap:9px;flex-shrink:0}
+.brand .mark{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-0.03em}
+.brand .org{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.nav{display:flex;gap:2px;margin-left:6px}
+.nav button{background:none;border:0;padding:7px 12px;border-radius:var(--r);color:var(--ink-2);font-weight:500;font-size:13.5px}
+.nav button[aria-current="true"]{background:var(--surface-3);color:var(--ink)}
+.nav .count{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:5px}
+.topbar .spacer{flex:1}
+.regionpick{display:flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:var(--r);padding:5px 8px;background:var(--surface)}
+.regionpick label{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.regionpick select{border:0;background:none;font-size:13px;font-weight:500;padding:0 2px}
+.ghost{background:none;border:1px solid var(--line-2);border-radius:var(--r);padding:6px 11px;font-size:13px;font-weight:500;color:var(--ink-2)}
+.ghost:hover{border-color:var(--ink-3);color:var(--ink)}
+.who{display:flex;align-items:center;gap:8px;padding-left:4px}
+.who .av{width:26px;height:26px;border-radius:50%;background:var(--surface-3);display:grid;place-items:center;font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-2)}
+.who .role{font-size:12px;color:var(--ink-3);line-height:1.25}
+.who .role b{display:block;color:var(--ink-2);font-weight:600;font-size:12.5px}
+
+/* ---------- search band ---------- */
+.band{background:var(--surface);border-bottom:1px solid var(--line);padding:18px 20px 14px}
+.bandinner{max-width:1560px;margin:0 auto}
+.askrow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.askwrap{flex:1 1 420px;position:relative;display:flex;align-items:center;border:1.5px solid var(--ink);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.askwrap:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 30%,transparent)}
+.askwrap .lead{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 0 14px;border-right:1px solid var(--line);align-self:stretch;display:flex;align-items:center;white-space:nowrap}
+#ask{flex:1;border:0;padding:13px 14px;font-size:15.5px;background:none;min-width:0}
+#ask:focus{outline:none}
+.askwrap .go{border:0;background:var(--ink);color:var(--paper);padding:0 18px;align-self:stretch;font-weight:600;font-size:13.5px}
+.sortwrap{display:flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:var(--r);padding:0 10px;background:var(--surface)}
+.sortwrap label{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sortwrap select{border:0;background:none;font-size:13px;font-weight:500;padding:9px 2px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;align-items:center}
+.chips .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-right:2px}
+.chip{background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12.5px;color:var(--ink-2)}
+.chip:hover{border-color:var(--ink-3);color:var(--ink);background:var(--surface-3)}
+
+/* ---------- shell ---------- */
+.shell{max-width:1560px;margin:0 auto;padding:18px 20px 60px;display:grid;gap:18px;grid-template-columns:216px minmax(0,1fr) 400px;align-items:start}
+@media(max-width:1240px){.shell{grid-template-columns:200px minmax(0,1fr)}}
+@media(max-width:860px){.shell{grid-template-columns:minmax(0,1fr);padding-top:14px}}
+
+/* ---------- facets ---------- */
+.facets{position:sticky;top:72px}
+@media(max-width:860px){.facets{position:static;display:none}.facets.open{display:block}}
+.fgroup{border-bottom:1px solid var(--line);padding:0 0 14px;margin-bottom:14px}
+.fgroup:last-child{border-bottom:0}
+.fgroup h4{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
+.frow{display:flex;align-items:center;gap:8px;padding:3.5px 0;font-size:13px;color:var(--ink-2);cursor:pointer}
+.frow:hover{color:var(--ink)}
+.frow input{margin:0;accent-color:var(--ink)}
+.frow .n{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.frow.zero{opacity:.42}
+.frow .swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.clearf{background:none;border:0;padding:0;font-size:12px;color:var(--ink-3);text-decoration:underline;text-underline-offset:2px}
+.clearf:hover{color:var(--ink)}
+.mobfacets{display:none}
+@media(max-width:860px){.mobfacets{display:flex;gap:8px;margin-bottom:12px}}
+
+/* ---------- results ---------- */
+.resulthead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.resulthead .n{font-family:var(--disp);font-size:19px;font-weight:700;letter-spacing:-0.02em}
+.resulthead .q{font-size:13px;color:var(--ink-3)}
+.resulthead .q b{color:var(--ink-2);font-weight:600}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:grid;grid-template-columns:3px minmax(0,1fr) auto;gap:0;border-bottom:1px solid var(--line);position:relative}
+.row:last-child{border-bottom:0}
+.row .rule{background:var(--rc)}
+.row .body{padding:13px 14px 12px 13px;min-width:0}
+.row:hover{background:var(--surface-2)}
+.row.sel{background:var(--surface-2)}
+.row.sel .rname{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px;text-decoration-color:var(--rc)}
+.row.dim .body{opacity:.55}
+.rtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rname{font-family:var(--disp);font-size:15.5px;font-weight:600;letter-spacing:-0.012em;text-align:left;background:none;border:0;padding:0;color:var(--ink)}
+.rname:hover{text-decoration:underline;text-underline-offset:3px}
+.tbadge{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:2.5px 6px;border-radius:2px;background:var(--rcbg);color:var(--rc)}
+.rsum{color:var(--ink-2);font-size:13.2px;margin:5px 0 7px;max-width:66ch}
+.rmeta{display:flex;gap:0;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-3)}
+.rmeta span{white-space:nowrap}
+.rmeta span+span::before{content:"·";margin:0 7px;color:var(--line-2)}
+.rmeta .mono{font-size:11.5px}
+.why{margin-top:8px;font-size:12px;color:var(--ink-3);display:flex;gap:6px;align-items:baseline}
+.why .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--focus)}
+.why em{font-style:normal;color:var(--ink-2);background:var(--warn-bg);padding:0 4px;border-radius:2px}
+.rside{padding:13px 14px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;justify-content:flex-start}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.stop{background:var(--stop-bg);color:var(--stop)}
+.pill.mute{background:var(--surface-3);color:var(--ink-3)}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.save{background:none;border:1px solid var(--line-2);border-radius:var(--r);padding:5px 10px;font-size:12px;font-weight:500;color:var(--ink-2);white-space:nowrap}
+.save:hover{border-color:var(--ink-3);color:var(--ink)}
+.save[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.empty{background:var(--surface);border:1px dashed var(--line-2);border-radius:var(--r);padding:34px 24px;text-align:center;color:var(--ink-3)}
+.empty h3{font-size:16px;color:var(--ink);margin-bottom:6px}
+
+/* ---------- detail ---------- */
+.detail{position:sticky;top:72px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);max-height:calc(100vh - 92px);overflow-y:auto}
+@media(max-width:1240px){
+  .detail{position:fixed;inset:0 0 0 auto;width:min(440px,100%);max-height:none;height:100%;border-radius:0;border-left:1px solid var(--line-2);z-index:60;transform:translateX(100%);transition:transform .18s ease;box-shadow:-14px 0 40px rgba(0,0,0,.14)}
+  .detail.open{transform:none}
+  .scrim{position:fixed;inset:0;background:rgba(10,14,12,.36);z-index:55;opacity:0;pointer-events:none;transition:opacity .18s}
+  .scrim.on{opacity:1;pointer-events:auto}
+}
+@media(min-width:1241px){.scrim{display:none}.dclose{display:none}}
+.dhead{padding:16px 18px 14px;border-bottom:1px solid var(--line);border-top:3px solid var(--rc);position:relative}
+.dclose{position:absolute;top:12px;right:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);width:28px;height:28px;line-height:1;font-size:15px;color:var(--ink-2)}
+.dhead h2{font-size:20px;margin:7px 0 6px;padding-right:30px}
+.dhead .owner{font-size:12.5px;color:var(--ink-3)}
+.dsec{padding:15px 18px;border-bottom:1px solid var(--line)}
+.dsec:last-child{border-bottom:0}
+.dsec h3{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
+.dsec p{margin:0 0 8px;color:var(--ink-2);font-size:13.4px}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.io{grid-template-columns:1fr}}
+.iobox{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:10px 11px}
+.iobox .eyebrow{display:block;margin-bottom:5px}
+.iobox ul{margin:0;padding-left:15px;font-size:12.8px;color:var(--ink-2)}
+.iobox li{margin-bottom:3px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tile{background:var(--surface);padding:10px 11px}
+.tile .v{font-family:var(--disp);font-size:19px;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;display:block;line-height:1.15}
+.tile .k{font-size:11px;color:var(--ink-3);display:block;margin-top:2px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}
+.kv dt{color:var(--ink-3);white-space:nowrap}
+.kv dd{margin:0;color:var(--ink-2);text-align:right}
+.gov{display:flex;flex-direction:column;gap:7px}
+.govrow{display:flex;align-items:flex-start;gap:9px;font-size:12.9px;color:var(--ink-2)}
+.govrow .ico{width:16px;text-align:center;flex-shrink:0;color:var(--ink-3);font-family:var(--mono);font-size:12px}
+.regions{display:flex;gap:5px;flex-wrap:wrap}
+.rg{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.06em;padding:3px 7px;border-radius:2px;border:1px solid var(--line-2);color:var(--ink-3)}
+.rg.on{background:var(--ok-bg);border-color:transparent;color:var(--ok)}
+.rg.you{outline:1.5px solid var(--focus);outline-offset:1px}
+.pairs{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pair{background:var(--surface);border:0;text-align:left;padding:9px 11px;display:grid;grid-template-columns:3px 1fr auto;gap:9px;align-items:center;width:100%}
+.pair:hover{background:var(--surface-2)}
+.pair .rule{align-self:stretch;background:var(--rc);border-radius:1px}
+.pair .nm{font-weight:600;font-size:13px}
+.pair .rs{font-size:11.8px;color:var(--ink-3);margin-top:1px}
+.pair .arrow{color:var(--ink-3);font-family:var(--mono)}
+.acts{display:flex;gap:8px;padding:14px 18px;position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line)}
+.btn{flex:1;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:var(--r);padding:10px 12px;font-weight:600;font-size:13.5px}
+.btn.alt{background:var(--surface);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.notice{font-size:12.4px;color:var(--ink-2);background:var(--warn-bg);border-left:3px solid var(--warn);padding:8px 10px;border-radius:0 var(--r) var(--r) 0}
+
+/* ---------- library ---------- */
+.lib{max-width:1560px;margin:0 auto;padding:20px 20px 70px}
+.libhead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+.libhead h1{font-size:26px}
+.libhead p{margin:0;color:var(--ink-3);font-size:13.5px;max-width:62ch}
+.libsec{margin-top:28px}
+.libsec>h2{font-size:17px;margin-bottom:3px}
+.libsec>.sub{color:var(--ink-3);font-size:13px;margin:0 0 12px;max-width:66ch}
+.kits{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:12px}
+.kit{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:9px}
+.kit h3{font-size:15.5px}
+.kit p{margin:0;font-size:12.9px;color:var(--ink-2)}
+.kitmembers{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.km{display:grid;grid-template-columns:3px 1fr auto;gap:8px;align-items:center;font-size:12.5px;background:none;border:0;padding:3px 0;text-align:left;width:100%;color:var(--ink-2)}
+.km:hover{color:var(--ink)}
+.km .rule{align-self:stretch;min-height:14px;background:var(--rc);border-radius:1px}
+.km .st{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.kit .btn{flex:none;margin-top:auto}
+.reqtable{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th{text-align:left;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line)}
+td{padding:11px 14px;border-bottom:1px solid var(--line);font-size:13.2px;color:var(--ink-2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td .nm{color:var(--ink);font-weight:600}
+th.num,td.num{text-align:right}
+
+/* ---------- notes ---------- */
+.notes{position:fixed;inset:0 0 0 auto;width:min(520px,100%);background:var(--surface);border-left:1px solid var(--line-2);z-index:70;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;box-shadow:-14px 0 40px rgba(0,0,0,.16)}
+.notes.open{transform:none}
+.notes .inner{padding:22px 24px 60px}
+.notes h2{font-size:21px;margin-bottom:6px}
+.notes .lead{color:var(--ink-2);font-size:13.5px;margin:0 0 18px}
+.note{border-top:1px solid var(--line);padding:15px 0}
+.note h3{font-size:14.5px;margin-bottom:5px;display:flex;gap:9px;align-items:baseline}
+.note h3 .idx{font-family:var(--mono);font-size:11px;color:var(--focus);font-weight:600}
+.note p{margin:0 0 7px;font-size:13.2px;color:var(--ink-2)}
+.note ul{margin:6px 0 0;padding-left:17px;font-size:13px;color:var(--ink-2)}
+.note li{margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:90;opacity:0;pointer-events:none;transition:opacity .16s,transform .16s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.hide{display:none!important}
+</style>
+
+<header class="topbar">
+  <div class="brand"><span class="mark">Concourse</span><span class="org">Halden Group</span></div>
+  <nav class="nav">
+    <button id="navDiscover" aria-current="true">Discover</button>
+    <button id="navLibrary">My library<span class="count" id="libCount">4</span></button>
+  </nav>
+  <div class="spacer"></div>
+  <div class="regionpick">
+    <label for="region">Building for</label>
+    <select id="region">
+      <option value="EMEA">EMEA</option>
+      <option value="NA">North America</option>
+      <option value="APAC">APAC</option>
+      <option value="LATAM">LATAM</option>
+    </select>
+  </div>
+  <button class="ghost" id="notesBtn">Design notes</button>
+  <div class="who">
+    <span class="av">RO</span>
+    <span class="role"><b>Rosa Okonkwo</b>Ops lead · Rotterdam</span>
+  </div>
+</header>
+
+<div class="band" id="band">
+  <div class="bandinner">
+    <div class="askrow">
+      <div class="askwrap">
+        <span class="lead">I want to</span>
+        <input id="ask" type="text" autocomplete="off" spellcheck="false" placeholder="describe the job in your own words…" value="let a bot reschedule a customer's delivery">
+        <button class="go" id="goBtn">Search</button>
+      </div>
+      <div class="sortwrap">
+        <label for="sort">Order by</label>
+        <select id="sort">
+          <option value="match">Best match</option>
+          <option value="access">Fastest to get access</option>
+          <option value="used">Most used at Halden</option>
+          <option value="updated">Recently updated</option>
+        </select>
+      </div>
+    </div>
+    <div class="chips" id="chips"><span class="lbl">Try</span></div>
+  </div>
+</div>
+
+<main class="shell" id="discoverView">
+  <div class="mobfacets">
+    <button class="ghost" id="facetToggle">Filters</button>
+    <button class="ghost" id="openDetailMob">Open details</button>
+  </div>
+  <aside class="facets" id="facets"></aside>
+  <section>
+    <div class="resulthead">
+      <span class="n" id="resCount">—</span>
+      <span class="q" id="resNote"></span>
+      <span class="spacer" style="flex:1"></span>
+    </div>
+    <div class="list" id="results"></div>
+  </section>
+  <aside class="detail" id="detail" aria-live="polite"></aside>
+</main>
+
+<div class="scrim" id="scrim"></div>
+
+<section class="lib hide" id="libraryView"></section>
+
+<aside class="notes" id="notes" aria-hidden="true">
+  <div class="inner">
+    <button class="dclose" id="notesClose" style="position:absolute;top:16px;right:18px;display:block" aria-label="Close design notes">×</button>
+    <span class="eyebrow">Prototype rationale</span>
+    <h2>Why it works this way</h2>
+    <p class="lead">Five decisions that shape search, the library, and the day-to-day experience for a non-engineer building an automation. Change any of them and the prototype changes shape.</p>
+
+    <div class="note">
+      <h3><span class="idx">01</span> Search takes a job, not a noun</h3>
+      <p>Business builders don't know that "delivery slot scheduling" is the name of the thing they need. The input is phrased <em style="font-style:normal;font-weight:600">I want to…</em> and matches against an <b>intent list</b> curated per listing — the phrases real people use for that capability — before it ever looks at the title.</p>
+      <p>Every result shows <b>why it matched</b>. That single line does more for trust than a relevance score ever will, and it teaches the vocabulary: after two searches, people start using your domain terms.</p>
+      <ul>
+        <li>Facets stay, but they narrow a ranked list rather than replace it.</li>
+        <li>Intents are content owners' work, not the search team's — treat them as a required publishing field.</li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <h3><span class="idx">02</span> "Can I actually use it?" is a search result attribute</h3>
+      <p>For a business builder the blocking question isn't whether a capability exists — it's whether they can use it, with their data, in their region, this week. So access state sits on the row itself, and <b>Fastest to get access</b> is a first-class sort.</p>
+      <p>Region is set once in the header and everything downstream respects it. Anything unavailable where you're building is dimmed and labelled rather than hidden, so people learn the estate instead of being quietly denied.</p>
+    </div>
+
+    <div class="note">
+      <h3><span class="idx">03</span> One metadata spine, four listing types</h3>
+      <p>APIs, agents, MCP tool servers and data products share the same spine — owner, domain, maturity, regions, data class, access path, usage. Only the <b>proof of quality</b> differs, and that's the type-specific block in the detail panel:</p>
+      <ul>
+        <li><b>API</b> — p95 latency, uptime, protocol, version</li>
+        <li><b>Agent</b> — autonomy level, human checkpoint, eval pass rate</li>
+        <li><b>Tool server</b> — the tools it exposes, scopes, transport</li>
+        <li><b>Data product</b> — freshness, volume, shape</li>
+      </ul>
+      <p>Colour identifies type the way a transit line does — consistently, everywhere, and never reused for status.</p>
+    </div>
+
+    <div class="note">
+      <h3><span class="idx">04</span> The library holds kits, not just bookmarks</h3>
+      <p>Nobody solves a real job with one listing. Kits are curated bundles that already work together, with the composition written down — "this agent calls that API, reads that stream". They're the fastest path from search to something running, and they're where your platform team encodes the paved road.</p>
+      <p>The library also carries <b>access requests</b> as visible, chase-able state. Requesting access is the moment most internal catalogues lose people.</p>
+    </div>
+
+    <div class="note">
+      <h3><span class="idx">05</span> What's real and what's staged here</h3>
+      <ul>
+        <li><b>Staged:</b> semantic ranking is a curated intent + synonym map, not embeddings. Good enough to test the interaction, and honestly cheap enough to ship as v1 while you build the real index.</li>
+        <li><b>Staged:</b> the 23 listings, usage figures, and Halden Group itself are invented but structurally realistic.</li>
+        <li><b>Real:</b> the metadata model, facet set, ranking inputs, access states and page flows are what you'd implement.</li>
+        <li><b>Missing on purpose:</b> publishing/onboarding flow, chargeback, versioning and deprecation comms, and the developer-facing "try it" console — all needed, none of them the thing you asked to figure out first.</li>
+      </ul>
+    </div>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const R = ["NA","EMEA","APAC","LATAM"];
+const ALL = ["NA","EMEA","APAC","LATAM"];
+
+const L = [
+/* ---------------- APIs ---------------- */
+{id:"api-slot", name:"Delivery Slot Scheduling", type:"api", domain:"Supply Chain",
+ summary:"Find, hold and confirm a delivery window for an order — including the cut-off rules and carrier capacity for each depot.",
+ does:["Lists bookable windows for a postcode and date range","Holds a slot for 10 minutes while a customer decides","Confirms, moves or cancels a booked window"],
+ gives:["Order number","Postcode or depot","Date range"], gets:["Bookable windows with cut-off times","A hold reference","Confirmation with carrier and ETA"],
+ owner:"Last-Mile Platform", ownerLoc:"Rotterdam", maturity:"production", access:"approval", accessNote:"Depot ops approve — typically 2 working days",
+ regions:["EMEA","NA","APAC"], dataClass:"internal", used:31, updated:"2026-08-27",
+ intents:["reschedule a delivery","change a delivery date","move a delivery window","rebook a customer's delivery","book a delivery slot","offer delivery times to a customer"],
+ tags:["delivery","slot","window","booking","carrier","depot","appointment"],
+ spec:{protocol:"REST",version:"v4",p95:"210 ms",uptime:"99.94%",vol:"1.2M calls / day"},
+ related:["agent-resched","data-exceptions","api-address"]},
+
+{id:"api-order", name:"Order Status", type:"api", domain:"Customer",
+ summary:"One read for where an order is right now, across every warehouse, carrier and returns flow Halden runs.",
+ does:["Returns current stage and last scan event","Merges split shipments into one timeline","Exposes the promise date and any breach reason"],
+ gives:["Order number or customer reference"], gets:["Stage, timeline and last known location","Promise date and breach reason","Linked returns"],
+ owner:"Order Experience", ownerLoc:"Manchester", maturity:"production", access:"self", accessNote:"Self-serve — key issued instantly",
+ regions:ALL, dataClass:"internal", used:88, updated:"2026-09-02",
+ intents:["answer where is my order","track a shipment","tell a customer where their parcel is","check order progress","see if a delivery is late"],
+ tags:["order","tracking","shipment","status","parcel","wismo"],
+ spec:{protocol:"GraphQL",version:"v1",p95:"64 ms",uptime:"99.99%",vol:"6.4M calls / day"},
+ related:["agent-resched","api-slot","data-exceptions"]},
+
+{id:"api-identity", name:"Customer Identity Lookup", type:"api", domain:"Customer",
+ summary:"Resolve a phone number, email or loyalty card to a single verified customer record — and say how confident that match is.",
+ does:["Matches on phone, email, card or address","Returns a confidence score with the match","Flags duplicate and merged records"],
+ gives:["Phone, email, card number or address"], gets:["Customer ID and confidence score","Consent and contact preferences","Linked accounts"],
+ owner:"Customer Data Platform", ownerLoc:"Chicago", maturity:"production", access:"approval", accessNote:"Privacy office approves — 3 working days",
+ regions:ALL, dataClass:"personal", used:64, updated:"2026-07-19",
+ intents:["find a customer record","verify who i'm talking to","match a phone number to an account","look up a customer","identify a caller"],
+ tags:["identity","customer","match","lookup","pii","consent"],
+ spec:{protocol:"REST",version:"v3",p95:"42 ms",uptime:"99.98%",vol:"3.1M calls / day"},
+ related:["data-c360","agent-refund","api-order"]},
+
+{id:"api-address", name:"Address Validation & Geocode", type:"api", domain:"Supply Chain",
+ summary:"Clean up a messy address, snap it to a real deliverable location, and get the depot that serves it.",
+ does:["Normalises addresses in 41 countries","Returns coordinates and a deliverability flag","Maps the address to its serving depot"],
+ gives:["Free-text address","Country code"], gets:["Normalised address","Latitude / longitude","Serving depot and zone"],
+ owner:"Network Planning", ownerLoc:"Rotterdam", maturity:"production", access:"self", accessNote:"Self-serve — key issued instantly",
+ regions:ALL, dataClass:"internal", used:52, updated:"2026-06-30",
+ intents:["check an address is real","clean up a delivery address","find which depot covers a postcode","geocode an address"],
+ tags:["address","postcode","zip","geocode","depot","validation"],
+ spec:{protocol:"REST",version:"v2",p95:"88 ms",uptime:"99.97%",vol:"2.0M calls / day"},
+ related:["api-slot","tool-warehouse"]},
+
+{id:"api-refund", name:"Payment Refund Initiation", type:"api", domain:"Finance",
+ summary:"Start a refund against an original payment, with the approval chain and audit trail Finance requires.",
+ does:["Refunds full or part of a captured payment","Routes anything over €500 to a named approver","Writes an immutable audit entry"],
+ gives:["Payment reference","Amount and reason code"], gets:["Refund reference and status","Approver, if one is required","Expected settlement date"],
+ owner:"Payments Core", ownerLoc:"Frankfurt", maturity:"production", access:"restricted", accessNote:"Restricted — Risk & Finance sign-off, 2–3 weeks",
+ regions:["EMEA","NA","LATAM"], dataClass:"confidential", used:12, updated:"2026-08-11",
+ intents:["refund a customer","give money back","issue a credit for an order","reverse a payment"],
+ tags:["refund","payment","credit","money","reversal","finance"],
+ spec:{protocol:"REST",version:"v2",p95:"340 ms",uptime:"99.99%",vol:"64K calls / day"},
+ related:["agent-refund","agent-dispute","tool-sap"]},
+
+{id:"api-product", name:"Product Master Data", type:"api", domain:"Manufacturing",
+ summary:"The one true description of any Halden product — dimensions, materials, hazard class and every market it's approved for.",
+ does:["Serves the governed product record by SKU or GTIN","Returns localised copy for 23 markets","Flags restricted and hazardous items"],
+ gives:["SKU or GTIN","Market code"], gets:["Governed attributes and media","Localised name and description","Market approvals and restrictions"],
+ owner:"Product Information Mgmt", ownerLoc:"Milan", maturity:"production", access:"self", accessNote:"Self-serve — key issued instantly",
+ regions:ALL, dataClass:"internal", used:71, updated:"2026-09-05",
+ intents:["get product details","find the size and weight of an item","check if a product is approved for a market","look up a sku"],
+ tags:["product","sku","catalogue","master data","pim","dimensions"],
+ spec:{protocol:"GraphQL",version:"v5",p95:"51 ms",uptime:"99.98%",vol:"4.8M calls / day"},
+ related:["data-forecast","tool-warehouse"]},
+
+{id:"api-people", name:"Employee Directory", type:"api", domain:"HR",
+ summary:"Who someone is, who they report to, which site they sit at and what they're certified to do.",
+ does:["Resolves a person by email or employee number","Returns reporting line and cost centre","Lists site certifications and their expiry"],
+ gives:["Email or employee number"], gets:["Name, role, site, manager","Cost centre","Certifications with expiry dates"],
+ owner:"People Systems", ownerLoc:"Singapore", maturity:"production", access:"approval", accessNote:"Works council approval in EMEA — 5 working days",
+ regions:ALL, dataClass:"personal", used:29, updated:"2026-05-22",
+ intents:["look up an employee","find someone's manager","check who is certified for a task","get staff details"],
+ tags:["employee","people","hr","directory","manager","certification"],
+ spec:{protocol:"REST",version:"v1",p95:"38 ms",uptime:"99.96%",vol:"420K calls / day"},
+ related:["agent-shift","tool-vault"]},
+
+{id:"api-tax", name:"Tax Rate Resolver", type:"api", domain:"Finance",
+ summary:"The correct tax treatment for a product sold from one place to another, on a given date — including the odd exemptions.",
+ does:["Resolves rate by product class, origin and destination","Handles reverse charge and exemption cases","Answers historically for any date since 2019"],
+ gives:["Product class","Origin and destination","Transaction date"], gets:["Rate and legal basis","Exemption or reverse-charge flag","Citation for audit"],
+ owner:"Indirect Tax Engineering", ownerLoc:"Frankfurt", maturity:"production", access:"self", accessNote:"Self-serve — key issued instantly",
+ regions:ALL, dataClass:"internal", used:24, updated:"2026-08-01",
+ intents:["work out the vat on an order","find the tax rate for a country","check if something is tax exempt"],
+ tags:["tax","vat","gst","rate","duty","finance"],
+ spec:{protocol:"REST",version:"v3",p95:"29 ms",uptime:"99.99%",vol:"900K calls / day"},
+ related:["agent-dispute","tool-sap"]},
+
+{id:"api-sanctions", name:"Sanctions & Watchlist Screening", type:"api", domain:"Risk & Compliance",
+ summary:"Screen a person or company against 60+ sanctions and watchlists, with the evidence pack regulators expect.",
+ does:["Screens names, entities and vessels","Returns graded hits with source and reason","Produces a retained evidence record"],
+ gives:["Name, country and entity type"], gets:["Graded hits with sources","Recommended action","Evidence record ID"],
+ owner:"Financial Crime Tech", ownerLoc:"London", maturity:"production", access:"restricted", accessNote:"Restricted — Compliance sign-off, 2–3 weeks",
+ regions:ALL, dataClass:"confidential", used:9, updated:"2026-09-01",
+ intents:["check if a supplier is sanctioned","screen a company against watchlists","run a compliance check on a partner","see if we can trade with someone"],
+ tags:["sanctions","screening","watchlist","compliance","kyc","risk","supplier"],
+ spec:{protocol:"REST",version:"v2",p95:"620 ms",uptime:"99.95%",vol:"38K calls / day"},
+ related:["agent-supplier","agent-contract","tool-vault"]},
+
+/* ---------------- Agents ---------------- */
+{id:"agent-resched", name:"Delivery Rescheduler", type:"agent", domain:"Supply Chain",
+ summary:"Talks to a customer whose delivery is at risk, agrees a new window that the network can actually hold, and rebooks it.",
+ does:["Picks up at-risk orders from the exceptions stream","Offers windows the depot can genuinely serve","Rebooks and confirms by the customer's chosen channel"],
+ gives:["An at-risk order, or a customer asking to move one"], gets:["A confirmed new window","A note on the order for the contact centre","An escalation if no window works"],
+ owner:"Last-Mile Platform", ownerLoc:"Rotterdam", maturity:"beta", access:"approval", accessNote:"Depot ops approve — typically 2 working days",
+ regions:["EMEA","NA"], dataClass:"personal", used:14, updated:"2026-09-04",
+ intents:["let a bot reschedule a customer's delivery","automatically rebook late deliveries","have an agent handle delivery changes","move a delivery without an agent call","stop customers calling about missed deliveries"],
+ tags:["agent","delivery","reschedule","rebook","autonomous","customer","bot"],
+ spec:{autonomy:"Acts, with approval",checkpoint:"Human confirms anything that adds cost",evalPass:"94%",tasks:"7.4K tasks / week",tools:"3 APIs · 1 stream"},
+ related:["api-slot","data-exceptions","api-order"]},
+
+{id:"agent-dispute", name:"Invoice Dispute Triage", type:"agent", domain:"Finance",
+ summary:"Reads an incoming invoice dispute, works out what actually went wrong, and either fixes it or routes it to the one team that can.",
+ does:["Extracts the claim from email or portal submissions","Reconciles against the PO, receipt and tax treatment","Settles clear-cut cases under €2,000 and routes the rest"],
+ gives:["A dispute email, portal case or credit request"], gets:["A categorised dispute with evidence","A settlement, or a routed case with a named owner","A weekly pattern report"],
+ owner:"Order to Cash", ownerLoc:"Kraków", maturity:"production", access:"approval", accessNote:"Finance controller approves — 2 working days",
+ regions:["EMEA","NA","APAC"], dataClass:"confidential", used:19, updated:"2026-08-20",
+ intents:["route an invoice dispute","sort out billing complaints automatically","triage credit requests","deal with supplier invoice queries"],
+ tags:["agent","invoice","dispute","billing","finance","triage","credit"],
+ spec:{autonomy:"Acts, with approval",checkpoint:"Human approves any settlement over €2,000",evalPass:"91%",tasks:"2.1K cases / week",tools:"4 APIs · 1 tool server"},
+ related:["api-refund","api-tax","tool-sap"]},
+
+{id:"agent-refund", name:"Customer Refund Advisor", type:"agent", domain:"Customer",
+ summary:"Works out what a complaining customer is actually owed under policy, drafts the answer, and hands a one-click decision to an advisor.",
+ does:["Reads the case history and order record","Applies the refund and goodwill policy for that market","Drafts the reply and stages the refund for approval"],
+ gives:["A customer complaint or case ID"], gets:["A policy-backed recommendation","A drafted reply in the customer's language","A staged refund awaiting one click"],
+ owner:"Customer Care Engineering", ownerLoc:"Manchester", maturity:"beta", access:"approval", accessNote:"Care ops approve — 2 working days",
+ regions:["EMEA","NA"], dataClass:"personal", used:11, updated:"2026-08-29",
+ intents:["decide if a customer gets a refund","draft a reply to a complaint","work out goodwill for an unhappy customer","handle refund requests"],
+ tags:["agent","refund","complaint","customer","care","goodwill","policy"],
+ spec:{autonomy:"Recommends only",checkpoint:"Advisor approves every refund",evalPass:"89%",tasks:"5.6K cases / week",tools:"3 APIs"},
+ related:["api-refund","api-identity","api-order"]},
+
+{id:"agent-supplier", name:"Supplier Onboarding Assistant", type:"agent", domain:"Supply Chain",
+ summary:"Walks a new supplier through onboarding, chases the documents they forgot, and only hands you the ones that need a human decision.",
+ does:["Collects and validates registration, tax and insurance documents","Runs sanctions screening and flags anything graded","Chases missing items on a schedule until complete"],
+ gives:["A supplier name and contact"], gets:["A complete, screened onboarding pack","A flagged exception list","A ready-to-approve supplier record"],
+ owner:"Procurement Technology", ownerLoc:"Singapore", maturity:"pilot", access:"approval", accessNote:"Procurement approves — pilot places limited",
+ regions:["APAC","EMEA"], dataClass:"confidential", used:4, updated:"2026-09-08",
+ intents:["onboard a new supplier","chase supplier documents","set up a vendor","get a supplier through compliance checks"],
+ tags:["agent","supplier","vendor","onboarding","procurement","documents"],
+ spec:{autonomy:"Acts, with approval",checkpoint:"Buyer approves the final supplier record",evalPass:"86%",tasks:"310 suppliers / week",tools:"2 APIs · 2 tool servers"},
+ related:["api-sanctions","tool-vault","agent-contract"]},
+
+{id:"agent-contract", name:"Contract Clause Reviewer", type:"agent", domain:"Risk & Compliance",
+ summary:"Reads a contract against Halden's clause playbook and tells you, in plain language, exactly which bits Legal will object to.",
+ does:["Compares every clause to the approved playbook","Grades deviations red, amber or acceptable","Suggests the fallback wording Legal has pre-approved"],
+ gives:["A draft contract (PDF or Word)"], gets:["A graded clause-by-clause review","Pre-approved fallback wording","A summary for the negotiator"],
+ owner:"Legal Operations", ownerLoc:"London", maturity:"production", access:"approval", accessNote:"Legal ops approve — 3 working days",
+ regions:ALL, dataClass:"confidential", used:22, updated:"2026-07-30",
+ intents:["review a contract","check a supplier agreement for problems","find risky clauses","get legal to look at a draft faster"],
+ tags:["agent","contract","clause","legal","review","risk","playbook"],
+ spec:{autonomy:"Recommends only",checkpoint:"Lawyer signs off every review",evalPass:"93%",tasks:"640 contracts / week",tools:"1 tool server"},
+ related:["tool-vault","api-sanctions","agent-supplier"]},
+
+{id:"agent-shift", name:"Shift Coverage Planner", type:"agent", domain:"HR",
+ summary:"When a site is short-staffed, finds people who are qualified, available and willing — and asks them, in the right order.",
+ does:["Detects coverage gaps against the site roster","Ranks candidates by certification, fatigue rules and cost","Sends the offer and confirms the accepted shift"],
+ gives:["A site and an uncovered shift"], gets:["A ranked, compliant candidate list","A confirmed replacement","An audit trail for the works council"],
+ owner:"Workforce Systems", ownerLoc:"Singapore", maturity:"pilot", access:"restricted", accessNote:"Restricted — works council consultation required per country",
+ regions:["APAC","EMEA"], dataClass:"personal", used:3, updated:"2026-09-07",
+ intents:["fill an empty shift","find cover for staff absence","sort out rota gaps","staff a warehouse shift"],
+ tags:["agent","shift","rota","staffing","hr","coverage","absence"],
+ spec:{autonomy:"Acts, with approval",checkpoint:"Site manager approves before offers go out",evalPass:"81%",tasks:"1.2K gaps / week",tools:"2 APIs"},
+ related:["api-people","tool-warehouse"]},
+
+/* ---------------- MCP tool servers ---------------- */
+{id:"tool-warehouse", name:"Warehouse Operations Toolkit", type:"tool", domain:"Supply Chain",
+ summary:"The tools an agent needs to actually do something in a warehouse — check stock, move a pallet, reprint a label, raise an exception.",
+ does:["Exposes 11 governed warehouse actions","Enforces site-level permissions per caller","Logs every action against the operator and the agent"],
+ gives:["A site code and an agent identity"], gets:["Stock, location and pallet tools","Label and exception tools","A full action log"],
+ owner:"Warehouse Platform", ownerLoc:"Rotterdam", maturity:"production", access:"approval", accessNote:"Site manager approves per warehouse — 2 working days",
+ regions:["EMEA","NA","APAC"], dataClass:"internal", used:17, updated:"2026-08-18",
+ intents:["let an agent check stock","give a bot warehouse actions","move pallets automatically","connect an agent to the warehouse"],
+ tags:["mcp","tools","warehouse","stock","pallet","label","operations"],
+ spec:{tools:"11 tools",scopes:"read:stock · write:movement · write:exception",transport:"Streamable HTTP",clients:"9 agents connected"},
+ related:["agent-resched","api-product","data-exceptions"]},
+
+{id:"tool-crm", name:"Customer CRM Bridge", type:"tool", domain:"Customer",
+ summary:"Read and write the customer record, cases and activity history from an agent — without anyone handing out a CRM licence.",
+ does:["Exposes 8 case and contact tools","Respects the caller's CRM role and territory","Redacts fields the caller isn't entitled to see"],
+ gives:["An agent identity mapped to a CRM role"], gets:["Case read/write tools","Contact and activity tools","Territory-scoped results"],
+ owner:"CRM Platform", ownerLoc:"Chicago", maturity:"production", access:"approval", accessNote:"CRM admin approves — 3 working days",
+ regions:ALL, dataClass:"personal", used:26, updated:"2026-08-06",
+ intents:["let an agent update a case","connect a bot to the crm","read customer cases automatically","log activity without a crm seat"],
+ tags:["mcp","tools","crm","case","customer","salesforce","bridge"],
+ spec:{tools:"8 tools",scopes:"read:case · write:case · read:contact",transport:"Streamable HTTP",clients:"14 agents connected"},
+ related:["agent-refund","api-identity","data-c360"]},
+
+{id:"tool-sap", name:"Finance Ledger Bridge", type:"tool", domain:"Finance",
+ summary:"A narrow, audited doorway into the finance ledger for agents — postings, balances and document lookups, nothing else.",
+ does:["Exposes 6 read tools and 2 posting tools","Requires dual control on every posting","Reconciles its own log against the ledger nightly"],
+ gives:["An agent identity with a finance role"], gets:["Balance and document lookups","Dual-controlled posting tools","A nightly reconciliation report"],
+ owner:"Finance Systems", ownerLoc:"Frankfurt", maturity:"production", access:"restricted", accessNote:"Restricted — CFO delegate sign-off, 3–4 weeks",
+ regions:ALL, dataClass:"confidential", used:6, updated:"2026-06-14",
+ intents:["let an agent read the ledger","connect finance systems to a bot","automate journal postings","get balances into an automation"],
+ tags:["mcp","tools","finance","ledger","sap","posting","balance"],
+ spec:{tools:"8 tools",scopes:"read:ledger · write:posting (dual control)",transport:"Streamable HTTP",clients:"4 agents connected"},
+ related:["agent-dispute","api-refund","api-tax"]},
+
+{id:"tool-vault", name:"Document Vault Tools", type:"tool", domain:"Risk & Compliance",
+ summary:"Search, read and file the company's contracts, certificates and policy documents — with retention rules enforced for you.",
+ does:["Full-text search across 4.2M governed documents","Reads with per-document entitlement checks","Files new documents under the right retention class"],
+ gives:["A query, or a document to file"], gets:["Ranked document hits with citations","Extracted text and metadata","A retention-classified filing receipt"],
+ owner:"Information Governance", ownerLoc:"London", maturity:"production", access:"approval", accessNote:"Records manager approves — 3 working days",
+ regions:ALL, dataClass:"confidential", used:21, updated:"2026-08-25",
+ intents:["search our contracts","let an agent read policy documents","find a certificate","file documents automatically"],
+ tags:["mcp","tools","documents","contracts","search","retention","vault"],
+ spec:{tools:"5 tools",scopes:"read:document · write:filing",transport:"Streamable HTTP",clients:"11 agents connected"},
+ related:["agent-contract","agent-supplier","api-sanctions"]},
+
+/* ---------------- Data products ---------------- */
+{id:"data-exceptions", name:"Delivery Exceptions Stream", type:"data", domain:"Supply Chain",
+ summary:"Every delivery that has gone wrong or is about to, published the moment the network knows about it.",
+ does:["Emits an event per at-risk or failed delivery","Carries the reason code and the depot's own forecast","Replayable for 30 days"],
+ gives:["A subscription and a consumer group"], gets:["Live exception events","Reason codes and severity","30 days of replay"],
+ owner:"Last-Mile Platform", ownerLoc:"Rotterdam", maturity:"production", access:"self", accessNote:"Self-serve — subscribe instantly",
+ regions:["EMEA","NA","APAC"], dataClass:"internal", used:34, updated:"2026-08-27",
+ intents:["know when a delivery fails","get alerted about late deliveries","feed delivery problems into an automation","see delivery exceptions live"],
+ tags:["stream","kafka","events","delivery","exception","late","failure"],
+ spec:{shape:"Kafka topic · Avro",fresh:"Under 4 seconds",vol:"2.1M events / day",retain:"30 days replay"},
+ related:["agent-resched","api-slot","tool-warehouse"]},
+
+{id:"data-c360", name:"Customer 360 Dataset", type:"data", domain:"Customer",
+ summary:"One governed row per customer, joining orders, contacts, consent and value — the dataset most teams end up rebuilding badly.",
+ does:["Joins 11 source systems into one governed row","Applies consent and suppression before you see it","Refreshes overnight with lineage published"],
+ gives:["A warehouse role and a stated purpose"], gets:["One row per customer with 140 attributes","Consent-safe segments","Published lineage and freshness"],
+ owner:"Customer Data Platform", ownerLoc:"Chicago", maturity:"production", access:"approval", accessNote:"Privacy office approves purpose — 5 working days",
+ regions:ALL, dataClass:"personal", used:47, updated:"2026-09-03",
+ intents:["get customer data for analysis","build a customer segment","find high value customers","analyse customer behaviour"],
+ tags:["dataset","customer","360","warehouse","segment","analytics","pii"],
+ spec:{shape:"Table · Iceberg",fresh:"Daily, 04:00 local",vol:"212M rows",retain:"7 years"},
+ related:["api-identity","tool-crm","data-footfall"]},
+
+{id:"data-forecast", name:"Demand Forecast Feature Store", type:"data", domain:"Manufacturing",
+ summary:"The features Halden's own planners use to predict demand — ready to reuse instead of re-deriving from raw sales.",
+ does:["Serves 90 curated demand features by SKU and site","Guarantees the same values online and in training","Versions every feature with a deprecation window"],
+ gives:["A SKU, site and horizon"], gets:["Point-in-time correct features","Seasonality and promotion signals","Feature version and lineage"],
+ owner:"Supply Planning Science", ownerLoc:"Milan", maturity:"production", access:"self", accessNote:"Self-serve — subscribe instantly",
+ regions:ALL, dataClass:"internal", used:18, updated:"2026-07-11",
+ intents:["forecast demand","predict how much we will sell","get features for a planning model","find seasonality data"],
+ tags:["dataset","features","forecast","demand","planning","ml","seasonality"],
+ spec:{shape:"Feature store · 90 features",fresh:"Hourly",vol:"18M rows / day",retain:"3 years"},
+ related:["api-product","data-footfall"]},
+
+{id:"data-footfall", name:"Store Footfall Events", type:"data", domain:"Marketing",
+ summary:"Anonymised counts of who walked into which store, when, and which zones they lingered in.",
+ does:["Streams entry, exit and zone-dwell counts per store","Aggregates before publishing — no individuals","Aligned to trading calendars per market"],
+ gives:["A subscription and store scope"], gets:["Per-store, per-hour counts","Zone dwell aggregates","Trading-calendar alignment"],
+ owner:"Retail Analytics", ownerLoc:"Singapore", maturity:"pilot", access:"self", accessNote:"Self-serve in APAC — other regions in rollout",
+ regions:["APAC"], dataClass:"internal", used:7, updated:"2026-09-06",
+ intents:["find footfall data for apac stores","see how busy shops are","measure store traffic","compare store visits week on week"],
+ tags:["stream","footfall","store","retail","traffic","visitors","analytics"],
+ spec:{shape:"Kafka topic · JSON",fresh:"15 minutes",vol:"640K events / day",retain:"14 days replay"},
+ related:["data-c360","data-forecast"]}
+];
+
+const KITS = [
+ {id:"kit-post", name:"Post-purchase care", domain:"Customer",
+  blurb:"Everything needed to answer, fix and follow up on an order that has gone wrong — the paved road Care and Last-Mile agreed on.",
+  members:["api-order","agent-resched","agent-refund","data-exceptions"],
+  how:"The exceptions stream wakes the Rescheduler; it reads Order Status and rebooks through Delivery Slot Scheduling. Anything the customer is owed goes to the Refund Advisor for an advisor's click."},
+ {id:"kit-supplier", name:"Supplier onboarding", domain:"Supply Chain",
+  blurb:"Take a new supplier from first contact to an approved record without a spreadsheet or a chasing email.",
+  members:["agent-supplier","api-sanctions","tool-vault","agent-contract"],
+  how:"The Onboarding Assistant collects documents into the Vault, screens the entity against sanctions, and sends the draft agreement to the Clause Reviewer before a buyer sees it."},
+ {id:"kit-dispute", name:"Finance dispute handling", domain:"Finance",
+  blurb:"Turn the invoice dispute inbox into a triaged queue with evidence already attached.",
+  members:["agent-dispute","api-tax","tool-sap","api-refund"],
+  how:"Triage reads the ledger through the Finance Bridge, checks the tax treatment, and either settles under €2,000 or routes with evidence. Refunds go through Payments Core with dual control."}
+];
+
+const TYPE = {
+ api:{label:"API", plural:"APIs", c:"var(--api)", bg:"var(--api-bg)"},
+ agent:{label:"Agent", plural:"Agents", c:"var(--agent)", bg:"var(--agent-bg)"},
+ tool:{label:"Tool server", plural:"Tool servers", c:"var(--tool)", bg:"var(--tool-bg)"},
+ data:{label:"Data product", plural:"Data products", c:"var(--data)", bg:"var(--data-bg)"}
+};
+const DOMAINS = ["Customer","Supply Chain","Finance","Risk & Compliance","HR","Manufacturing","Marketing"];
+const ACCESS = {
+ self:{label:"Ready to use", cls:"ok", rank:0},
+ approval:{label:"Approval needed", cls:"warn", rank:1},
+ restricted:{label:"Restricted", cls:"stop", rank:2}
+};
+const MATURITY = {production:"Production", beta:"Beta", pilot:"Pilot"};
+const DATACLASS = {internal:"No personal data", confidential:"Confidential", personal:"Personal data"};
+
+/* ---------------- search ---------------- */
+const STOP = new Set("a an the i to for my me of in on at that this it is are be want wants need needs can could do does how with and or our we us let get make made someone something please".split(" "));
+const SYN = {
+ bot:["agent","autonomous","automate"], bots:["agent"], ai:["agent"], automatic:["agent","automate"], automatically:["agent","automate"],
+ reschedule:["delivery","slot","window","booking","rebook"], rebook:["delivery","slot","booking"], reschedul:["delivery","slot","window"],
+ appointment:["slot","window","booking"], booking:["slot","window"], slot:["window","booking"],
+ parcel:["order","shipment","delivery"], package:["order","shipment","delivery"], shipment:["order","delivery"],
+ wismo:["order","tracking","status"], track:["tracking","order","status"], tracking:["order","status"],
+ client:["customer"], consumer:["customer"], shopper:["customer"], caller:["customer"], buyer:["customer"],
+ money:["refund","payment","credit"], compensate:["refund","goodwill"], goodwill:["refund"], reimburse:["refund"],
+ complaint:["customer","care","refund"], complain:["customer","care"],
+ bill:["invoice","payment"], billing:["invoice"], invoice:["dispute","payment"],
+ vendor:["supplier","procurement"], sanction:["sanctions","screening","compliance"], sanctioned:["sanctions","screening"],
+ compliance:["risk","screening"], legal:["contract","clause","risk"],
+ staff:["employee","hr","shift"], rota:["shift","roster"], roster:["shift"], absence:["shift","coverage"], cover:["shift","coverage"],
+ zip:["postcode","address"], postcode:["address"], geocode:["address"],
+ vat:["tax"], gst:["tax"], duty:["tax"],
+ traffic:["footfall","store"], visitors:["footfall","store"], busy:["footfall"], shop:["store"], shops:["store"],
+ predict:["forecast","demand"], forecasting:["forecast"], planning:["forecast","demand"],
+ dataset:["data","warehouse"], report:["data","analytics"], analyse:["analytics","data"], analyze:["analytics","data"],
+ stock:["inventory","warehouse"], inventory:["stock","warehouse"], pallet:["warehouse"],
+ sku:["product","catalogue"], catalog:["catalogue","product"], item:["product"],
+ tool:["mcp","tools"], tools:["mcp"], connect:["bridge","mcp"], plug:["bridge","mcp"],
+ document:["documents","contract","vault"], documents:["contract","vault"], file:["documents","vault"],
+ late:["exception","delay","failure"], missed:["exception","failure"], failed:["exception","failure"], problem:["exception"],
+ identity:["customer","match","lookup"], verify:["identity","match"]
+};
+function stem(w){
+  if(w.length>4 && w.endsWith("ing")) return w.slice(0,-3);
+  if(w.length>4 && w.endsWith("ed")) return w.slice(0,-2);
+  if(w.length>4 && w.endsWith("ies")) return w.slice(0,-3)+"y";
+  if(w.length>3 && w.endsWith("es")) return w.slice(0,-2);
+  if(w.length>3 && w.endsWith("s")) return w.slice(0,-1);
+  return w;
+}
+function tokenize(str){
+  return String(str||"").toLowerCase().replace(/[^a-z0-9]+/g," ").split(" ")
+    .filter(w=>w.length>1 && !STOP.has(w));
+}
+function expand(tokens){
+  const out=new Map();
+  tokens.forEach(t=>{
+    out.set(t,1); out.set(stem(t),1);
+    (SYN[t]||SYN[stem(t)]||[]).forEach(s=>{ if(!out.has(s)) out.set(s,0.7); out.set(stem(s),0.7); });
+  });
+  return out;
+}
+function bigrams(tokens){
+  const out=[]; for(let i=0;i<tokens.length-1;i++) out.push(tokens[i]+" "+tokens[i+1]); return out;
+}
+function score(l, qTokens){
+  if(!qTokens.length) return {s:0, why:null};
+  const weighted = expand(qTokens);
+  const origByStem = new Map(); qTokens.forEach(t=>origByStem.set(stem(t), t));
+  const fields = [
+    [l.intents.join(" "), 6],
+    [l.name, 4.5],
+    [l.tags.join(" "), 3],
+    [l.summary+" "+l.does.join(" "), 2],
+    [l.domain+" "+TYPE[l.type].label, 1.4]
+  ];
+  let s=0; const hits=new Set();
+  fields.forEach(([text,w])=>{
+    const set=new Set(tokenize(text).flatMap(t=>[t,stem(t)]));
+    weighted.forEach((mult,tok)=>{
+      if(set.has(tok)){ s += w*mult; if(origByStem.has(tok)) hits.add(origByStem.get(tok)); }
+    });
+  });
+  const qb = bigrams(qTokens.map(stem));
+  let best=null, bestHits=0;
+  l.intents.forEach(intent=>{
+    const it = tokenize(intent).map(stem);
+    const iset = new Set(it);
+    let h=0; qTokens.map(stem).forEach(t=>{ if(iset.has(t)) h++; });
+    const ib = new Set(bigrams(it));
+    let phrase=0; qb.forEach(g=>{ if(ib.has(g)) phrase++; });
+    const total = h + phrase*2.2;
+    if(total>bestHits){ bestHits=total; best=intent; }
+    s += phrase*7;
+  });
+  if(!s) return {s:0, why:null};
+  // one generic word in common is not a match worth ranking highly
+  if(bestHits < 1.8 && hits.size < 2) s *= 0.4;
+  const why = best && bestHits>=1.8
+    ? {k:"matched intent", t:best}
+    : {k:"matched on", t:(hits.size?[...hits]:qTokens.slice(0,2)).slice(0,3).join(", ")};
+  return {s, why};
+}
+
+/* ---------------- state ---------------- */
+const KEY="concourse.v1";
+const defaults = {saved:["api-order","agent-resched","data-exceptions","tool-warehouse"], requests:{"agent-resched":{status:"Pending",with:"Depot Ops, Rotterdam",on:"2026-09-08"}}};
+function load(){ try{ const raw=localStorage.getItem(KEY); if(raw) return JSON.parse(raw); }catch(e){} return null; }
+function persist(){ try{ localStorage.setItem(KEY, JSON.stringify({saved:[...S.saved], requests:S.requests})); }catch(e){} }
+const stored = load() || {};
+const S = {
+  view:"discover",
+  q:"let a bot reschedule a customer's delivery",
+  sort:"match",
+  region:"EMEA",
+  facets:{type:new Set(),domain:new Set(),access:new Set(),maturity:new Set(),data:new Set()},
+  regionOnly:false,
+  sel:null,
+  saved:new Set(stored.saved || defaults.saved),
+  requests: stored.requests || JSON.parse(JSON.stringify(defaults.requests))
+};
+const byId = id => L.find(l=>l.id===id);
+const $ = s => document.querySelector(s);
+
+function accessOf(l){
+  if(S.requests[l.id] && S.requests[l.id].status==="Approved") return {label:"In your library", cls:"ok", rank:0};
+  if(S.requests[l.id] && S.requests[l.id].status==="Pending") return {label:"Request pending", cls:"mute", rank:0.5};
+  return ACCESS[l.access];
+}
+function inRegion(l){ return l.regions.includes(S.region); }
+
+function matched(){
+  const qTokens = tokenize(S.q);
+  let rows = L.map(l=>{
+    const {s,why} = score(l,qTokens);
+    return {l, s: qTokens.length ? (inRegion(l)? s : s*0.5) : (inRegion(l)?1:0.5), why};
+  });
+  if(qTokens.length) rows = rows.filter(r=>r.s>0);
+  return rows;
+}
+function passes(r, skip){
+  const l=r.l, f=S.facets;
+  if(skip!=="type" && f.type.size && !f.type.has(l.type)) return false;
+  if(skip!=="domain" && f.domain.size && !f.domain.has(l.domain)) return false;
+  if(skip!=="access" && f.access.size && !f.access.has(l.access)) return false;
+  if(skip!=="maturity" && f.maturity.size && !f.maturity.has(l.maturity)) return false;
+  if(skip!=="data" && f.data.size && !f.data.has(l.dataClass)) return false;
+  if(skip!=="region" && S.regionOnly && !inRegion(l)) return false;
+  return true;
+}
+function sorted(rows){
+  const c=[...rows];
+  if(S.sort==="match") c.sort((a,b)=> b.s-a.s || b.l.used-a.l.used);
+  if(S.sort==="used") c.sort((a,b)=> b.l.used-a.l.used);
+  if(S.sort==="updated") c.sort((a,b)=> b.l.updated.localeCompare(a.l.updated));
+  if(S.sort==="access") c.sort((a,b)=> accessOf(a.l).rank-accessOf(b.l).rank || b.s-a.s);
+  return c;
+}
+
+/* ---------------- rendering ---------------- */
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dateFmt = d => new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+function tvars(t){ return `--rc:${TYPE[t].c};--rcbg:${TYPE[t].bg}`; }
+function pill(a){ return `<span class="pill ${a.cls}"><span class="dot"></span>${esc(a.label)}</span>`; }
+
+const CHIPS = [
+ "let a bot reschedule a customer's delivery",
+ "answer where is my order",
+ "check if a supplier is sanctioned",
+ "route an invoice dispute",
+ "find footfall data for APAC stores",
+ "let an agent check stock"
+];
+function renderChips(){
+  const el=$("#chips");
+  el.innerHTML = `<span class="lbl">Try</span>` + CHIPS.map(c=>`<button class="chip" data-q="${esc(c)}">${esc(c)}</button>`).join("");
+}
+
+function renderFacets(){
+  const rows = matched();
+  const count = (key, test) => rows.filter(r=>passes(r,key) && test(r.l)).length;
+  const group = (key,title,items) => `
+    <div class="fgroup"><h4>${title}</h4>${items.map(i=>{
+      const n = count(key, i.test);
+      const on = S.facets[key] ? S.facets[key].has(i.v) : false;
+      return `<label class="frow ${n?"":"zero"}"><input type="checkbox" data-facet="${key}" data-v="${esc(i.v)}" ${on?"checked":""}>${i.sw?`<span class="swatch" style="background:${i.sw}"></span>`:""}<span>${esc(i.label)}</span><span class="n">${n}</span></label>`;
+    }).join("")}</div>`;
+
+  const any = Object.values(S.facets).some(s=>s.size) || S.regionOnly;
+  $("#facets").innerHTML = `
+    <div class="fgroup" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:10px">
+      <h4 style="margin:0">Narrow it down</h4>
+      ${any?`<button class="clearf" id="clearFacets">Clear all</button>`:""}
+    </div>
+    <div class="fgroup"><h4>Where you're building</h4>
+      <label class="frow"><input type="checkbox" id="regionOnly" ${S.regionOnly?"checked":""}><span>Available in ${esc(S.region)} only</span><span class="n">${rows.filter(r=>passes(r,"region") && inRegion(r.l)).length}</span></label>
+    </div>
+    ${group("type","Kind of thing", Object.keys(TYPE).map(t=>({v:t,label:TYPE[t].plural,sw:TYPE[t].c,test:l=>l.type===t})))}
+    ${group("access","Can I use it", [
+      {v:"self",label:"Ready to use now",test:l=>l.access==="self"},
+      {v:"approval",label:"Approval needed",test:l=>l.access==="approval"},
+      {v:"restricted",label:"Restricted",test:l=>l.access==="restricted"}])}
+    ${group("domain","Business area", DOMAINS.map(d=>({v:d,label:d,test:l=>l.domain===d})))}
+    ${group("maturity","Maturity", Object.keys(MATURITY).map(m=>({v:m,label:MATURITY[m],test:l=>l.maturity===m})))}
+    ${group("data","Data it handles", Object.keys(DATACLASS).map(d=>({v:d,label:DATACLASS[d],test:l=>l.dataClass===d})))}
+  `;
+}
+
+function typeLine(l){
+  const s=l.spec;
+  if(l.type==="api") return `<span class="mono">${esc(s.protocol)} ${esc(s.version)}</span><span class="mono">p95 ${esc(s.p95)}</span>`;
+  if(l.type==="agent") return `<span>${esc(s.autonomy)}</span><span class="mono">${esc(s.evalPass)} eval pass</span>`;
+  if(l.type==="tool") return `<span class="mono">${esc(s.tools)}</span><span>${esc(s.clients)}</span>`;
+  return `<span>${esc(s.shape)}</span><span class="mono">${esc(s.fresh)}</span>`;
+}
+
+function renderResults(){
+  const rows = sorted(matched().filter(r=>passes(r,null)));
+  const q = S.q.trim();
+  $("#resCount").textContent = `${rows.length} ${rows.length===1?"result":"results"}`;
+  $("#resNote").innerHTML = q
+    ? `for <b>&ldquo;${esc(q)}&rdquo;</b> &middot; ranked by what people actually asked for`
+    : `everything published to Concourse`;
+  if(!rows.length){
+    $("#results").outerHTML = `<div class="empty" id="results"><h3>Nothing matches that yet</h3><p>Try fewer words, or clear a filter. If Halden really has no capability for this, that gap is worth logging — it's the most useful thing a marketplace produces.</p></div>`;
+    return;
+  }
+  if(!rows.some(r=>r.l.id===S.sel)) S.sel = rows[0].l.id;
+  const html = rows.map(({l,why})=>{
+    const a=accessOf(l), out=!inRegion(l);
+    return `<article class="row ${S.sel===l.id?"sel":""} ${out?"dim":""}" style="${tvars(l.type)}" data-id="${l.id}">
+      <div class="rule"></div>
+      <div class="body">
+        <div class="rtop">
+          <button class="rname" data-open="${l.id}">${esc(l.name)}</button>
+          <span class="tbadge">${esc(TYPE[l.type].label)}</span>
+          ${out?`<span class="pill mute">Not live in ${esc(S.region)}</span>`:""}
+        </div>
+        <p class="rsum">${esc(l.summary)}</p>
+        <div class="rmeta">
+          <span>${esc(l.domain)}</span>
+          <span>${esc(l.owner)}</span>
+          <span>${esc(MATURITY[l.maturity])}</span>
+          <span class="mono">${l.used} teams</span>
+          ${typeLine(l)}
+        </div>
+        ${why && S.q.trim() ? `<div class="why"><span class="k">${esc(why.k)}</span><em>${esc(why.t)}</em></div>`:""}
+      </div>
+      <div class="rside">
+        ${pill(a)}
+        <button class="save" data-save="${l.id}" aria-pressed="${S.saved.has(l.id)}">${S.saved.has(l.id)?"Saved":"Save"}</button>
+      </div>
+    </article>`;
+  }).join("");
+  const host=$("#results");
+  if(host.tagName!=="DIV" || host.className!=="list"){
+    host.outerHTML = `<div class="list" id="results">${html}</div>`;
+  } else host.innerHTML = html;
+}
+
+function tiles(l){
+  const s=l.spec;
+  const t = l.type==="api" ? [[s.p95,"p95 response"],[s.uptime,"uptime, 90 days"],[s.vol.split(" ")[0],"calls per day"]]
+    : l.type==="agent" ? [[s.evalPass,"eval pass rate"],[s.tasks.split(" ")[0],s.tasks.split(" ").slice(1).join(" ")],[String(l.used),"teams using it"]]
+    : l.type==="tool" ? [[s.tools.split(" ")[0],"tools exposed"],[s.clients.split(" ")[0],"agents connected"],[String(l.used),"teams using it"]]
+    : [[s.fresh.split(" ")[0]+(s.fresh.includes("minute")?" min":""),"freshness"],[s.vol.split(" ")[0],s.vol.split(" ").slice(1).join(" ")],[String(l.used),"teams using it"]];
+  return `<div class="tiles">${t.map(([v,k])=>`<div class="tile"><span class="v">${esc(v)}</span><span class="k">${esc(k)}</span></div>`).join("")}</div>`;
+}
+function typeBlock(l){
+  const s=l.spec;
+  const rows = l.type==="api" ? [["Protocol",s.protocol+" "+s.version],["Uptime, 90 days",s.uptime],["Volume",s.vol]]
+    : l.type==="agent" ? [["Autonomy",s.autonomy],["Human checkpoint",s.checkpoint],["Calls out to",s.tools]]
+    : l.type==="tool" ? [["Scopes",s.scopes],["Transport",s.transport],["Tools",s.tools]]
+    : [["Shape",s.shape],["Freshness",s.fresh],["Retention",s.retain]];
+  return `<dl class="kv">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>`;
+}
+
+function renderDetail(){
+  const l = byId(S.sel);
+  const el = $("#detail");
+  if(!l){ el.innerHTML = `<div class="dsec"><p>Pick a result to see what it does.</p></div>`; return; }
+  const a = accessOf(l), out = !inRegion(l), req = S.requests[l.id];
+  const proofTitle = {api:"Service level",agent:"Autonomy & guardrails",tool:"What it exposes",data:"Shape & freshness"}[l.type];
+  el.style.cssText = tvars(l.type);
+  el.innerHTML = `
+    <div class="dhead">
+      <button class="dclose" id="dClose" aria-label="Close details">&times;</button>
+      <span class="eyebrow">${esc(TYPE[l.type].label)} &middot; ${esc(l.domain)}</span>
+      <h2>${esc(l.name)}</h2>
+      <div class="owner">Owned by <b>${esc(l.owner)}</b>, ${esc(l.ownerLoc)} &middot; ${esc(MATURITY[l.maturity])} &middot; updated ${dateFmt(l.updated)}</div>
+      <div style="margin-top:10px;display:flex;gap:7px;flex-wrap:wrap">${pill(a)}${out?`<span class="pill mute">Not live in ${esc(S.region)}</span>`:""}</div>
+    </div>
+
+    <div class="dsec">
+      <h3>What it does</h3>
+      <p>${esc(l.summary)}</p>
+      <ul style="margin:8px 0 0;padding-left:17px;font-size:13.2px;color:var(--ink-2)">${l.does.map(d=>`<li style="margin-bottom:3px">${esc(d)}</li>`).join("")}</ul>
+    </div>
+
+    <div class="dsec">
+      <h3>Working with it</h3>
+      <div class="io">
+        <div class="iobox"><span class="eyebrow">You give it</span><ul>${l.gives.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+        <div class="iobox"><span class="eyebrow">You get back</span><ul>${l.gets.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      </div>
+    </div>
+
+    <div class="dsec">
+      <h3>${esc(proofTitle)}</h3>
+      ${tiles(l)}
+      <div style="height:12px"></div>
+      ${typeBlock(l)}
+    </div>
+
+    <div class="dsec">
+      <h3>Fit &amp; governance</h3>
+      <div class="gov">
+        <div class="govrow"><span class="ico">${l.dataClass==="personal"?"PII":l.dataClass==="confidential"?"C":"—"}</span><span><b>${esc(DATACLASS[l.dataClass])}</b>${l.dataClass==="personal"?" — a stated purpose is required before access is granted.":l.dataClass==="confidential"?" — usage is logged and reviewed quarterly.":" — no additional handling obligations."}</span></div>
+        <div class="govrow"><span class="ico">${a.cls==="ok"?"✓":a.cls==="stop"?"!":"~"}</span><span>${esc(l.accessNote)}</span></div>
+        ${req?`<div class="govrow"><span class="ico">›</span><span>Your request is <b>${esc(req.status)}</b> with ${esc(req.with)} since ${dateFmt(req.on)}.</span></div>`:""}
+      </div>
+      <div style="height:11px"></div>
+      <span class="eyebrow" style="display:block;margin-bottom:6px">Live in</span>
+      <div class="regions">${R.map(r=>`<span class="rg ${l.regions.includes(r)?"on":""} ${r===S.region?"you":""}">${esc(r)}</span>`).join("")}</div>
+      ${out?`<div style="height:11px"></div><div class="notice">You're building for ${esc(S.region)}, where this isn't live yet. Ask ${esc(l.owner)} about their rollout plan before you design around it.</div>`:""}
+    </div>
+
+    <div class="dsec">
+      <h3>Works well with</h3>
+      <div class="pairs">${l.related.map(id=>{ const r=byId(id); if(!r) return ""; const ra=accessOf(r);
+        return `<button class="pair" style="${tvars(r.type)}" data-open="${r.id}"><span class="rule"></span><span><span class="nm">${esc(r.name)}</span><span class="rs">${esc(TYPE[r.type].label)} &middot; ${esc(ra.label)}</span></span><span class="arrow">→</span></button>`;
+      }).join("")}</div>
+    </div>
+
+    <div class="acts">
+      <button class="btn alt" data-save="${l.id}" aria-pressed="${S.saved.has(l.id)}">${S.saved.has(l.id)?"Saved to library":"Save to library"}</button>
+      <button class="btn" data-request="${l.id}" ${req?"disabled":""}>${req? (req.status==="Approved"?"Access granted":"Request sent") : (l.access==="self"?"Get access now":"Request access")}</button>
+    </div>`;
+}
+
+/* ---------------- library ---------------- */
+function renderLibrary(){
+  const saved = [...S.saved].map(byId).filter(Boolean);
+  const reqIds = Object.keys(S.requests);
+  const savedHtml = saved.length ? `<div class="list">${saved.map(l=>{
+      const a=accessOf(l), out=!inRegion(l);
+      return `<article class="row" style="${tvars(l.type)}" data-id="${l.id}">
+        <div class="rule"></div>
+        <div class="body">
+          <div class="rtop"><button class="rname" data-open="${l.id}">${esc(l.name)}</button><span class="tbadge">${esc(TYPE[l.type].label)}</span>${out?`<span class="pill mute">Not live in ${esc(S.region)}</span>`:""}</div>
+          <p class="rsum">${esc(l.summary)}</p>
+          <div class="rmeta"><span>${esc(l.domain)}</span><span>${esc(l.owner)}</span><span>${esc(MATURITY[l.maturity])}</span></div>
+        </div>
+        <div class="rside">${pill(a)}<button class="save" data-save="${l.id}" aria-pressed="true">Remove</button></div>
+      </article>`;
+    }).join("")}</div>`
+    : `<div class="empty"><h3>Nothing saved yet</h3><p>Save anything you might build with — it keeps its access state here, so you can see what you're actually cleared to use.</p></div>`;
+
+  $("#libraryView").innerHTML = `
+    <div class="libhead">
+      <div>
+        <span class="eyebrow">Rosa Okonkwo &middot; Ops lead, Rotterdam</span>
+        <h1>My library</h1>
+      </div>
+      <p>What you've saved, what you're waiting on, and the kits that already solve a whole job. Access state is carried here so you always know what you can actually build with today.</p>
+    </div>
+
+    <section class="libsec">
+      <h2>Access requests</h2>
+      <p class="sub">The step where most internal catalogues lose people. Requests stay visible and chase-able until they land.</p>
+      ${reqIds.length ? `<div class="reqtable"><table>
+        <thead><tr><th>Capability</th><th>Approver</th><th>Requested</th><th>Status</th><th class="num">Waiting</th></tr></thead>
+        <tbody>${reqIds.map(id=>{ const l=byId(id); if(!l) return ""; const r=S.requests[id];
+          const days = Math.max(0, Math.round((Date.now()-new Date(r.on+"T00:00:00"))/86400000));
+          const cls = r.status==="Approved"?"ok":"warn";
+          return `<tr><td><span class="nm">${esc(l.name)}</span><br><span style="font-size:12px;color:var(--ink-3)">${esc(TYPE[l.type].label)} &middot; ${esc(l.domain)}</span></td>
+            <td>${esc(r.with)}</td><td class="mono">${dateFmt(r.on)}</td><td>${pill({label:r.status,cls:cls})}</td>
+            <td class="num mono">${days} d</td></tr>`;
+        }).join("")}</tbody></table></div>`
+      : `<div class="empty"><h3>No open requests</h3><p>Request access from any listing and it will show up here with its approver and age.</p></div>`}
+    </section>
+
+    <section class="libsec">
+      <h2>Kits</h2>
+      <p class="sub">Bundles that already work together, with the composition written down. Faster than assembling four listings yourself, and the place your platform team encodes the paved road.</p>
+      <div class="kits">${KITS.map(k=>`
+        <article class="kit">
+          <div><span class="eyebrow">${esc(k.domain)}</span><h3 style="margin-top:4px">${esc(k.name)}</h3></div>
+          <p>${esc(k.blurb)}</p>
+          <div class="kitmembers">${k.members.map(id=>{ const l=byId(id); if(!l) return ""; const a=accessOf(l);
+            return `<button class="km" style="${tvars(l.type)}" data-open="${l.id}"><span class="rule"></span><span>${esc(l.name)}</span><span class="st" style="color:${a.cls==="ok"?"var(--ok)":a.cls==="stop"?"var(--stop)":a.cls==="warn"?"var(--warn)":"var(--ink-3)"}">${esc(a.label)}</span></button>`;
+          }).join("")}</div>
+          <p style="font-size:12.4px;color:var(--ink-3);border-left:2px solid var(--line-2);padding-left:9px">${esc(k.how)}</p>
+          <button class="btn alt" data-kit="${k.id}">Save all four</button>
+        </article>`).join("")}</div>
+    </section>
+
+    <section class="libsec">
+      <h2>Saved <span class="mono" style="font-size:14px;color:var(--ink-3);font-weight:400">${saved.length}</span></h2>
+      <p class="sub">Individual capabilities you've put aside.</p>
+      ${savedHtml}
+    </section>`;
+}
+
+/* ---------------- interaction ---------------- */
+let toastT;
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"),2200);
+}
+function openDetail(id){
+  S.sel=id;
+  renderDetail();
+  if(window.matchMedia("(max-width:1240px)").matches){
+    $("#detail").classList.add("open"); $("#scrim").classList.add("on");
+  }
+  renderResults();
+}
+function closeDetail(){ $("#detail").classList.remove("open"); $("#scrim").classList.remove("on"); }
+
+function setView(v){
+  S.view=v;
+  const disc = v==="discover";
+  $("#discoverView").classList.toggle("hide",!disc);
+  $("#band").classList.toggle("hide",!disc);
+  $("#libraryView").classList.toggle("hide",disc);
+  $("#navDiscover").setAttribute("aria-current", disc?"true":"false");
+  $("#navLibrary").setAttribute("aria-current", disc?"false":"true");
+  if(disc){ renderAll(); } else { renderLibrary(); }
+  window.scrollTo({top:0,behavior:"instant"});
+}
+function renderAll(){
+  renderFacets(); renderResults(); renderDetail();
+  $("#libCount").textContent = S.saved.size;
+}
+function refresh(){
+  $("#libCount").textContent = S.saved.size;
+  if(S.view==="discover") renderAll(); else renderLibrary();
+}
+
+document.addEventListener("click", e=>{
+  const open = e.target.closest("[data-open]");
+  if(open){ if(S.view!=="discover") setView("discover"); openDetail(open.getAttribute("data-open")); return; }
+  const sv = e.target.closest("[data-save]");
+  if(sv){
+    const id=sv.getAttribute("data-save"), l=byId(id);
+    if(S.saved.has(id)){ S.saved.delete(id); toast(`Removed ${l.name} from your library`); }
+    else { S.saved.add(id); toast(`Saved ${l.name} to your library`); }
+    persist(); refresh(); return;
+  }
+  const rq = e.target.closest("[data-request]");
+  if(rq){
+    const id=rq.getAttribute("data-request"), l=byId(id);
+    if(l.access==="self"){
+      S.requests[id]={status:"Approved", with:"Self-serve", on:new Date().toISOString().slice(0,10)};
+      S.saved.add(id); toast(`Access granted — ${l.name} is in your library`);
+    } else {
+      const who = l.access==="restricted" ? "Risk & Compliance review board" : l.owner;
+      S.requests[id]={status:"Pending", with:who, on:new Date().toISOString().slice(0,10)};
+      toast(`Request sent to ${who}`);
+    }
+    persist(); refresh(); return;
+  }
+  const kit = e.target.closest("[data-kit]");
+  if(kit){
+    const k=KITS.find(x=>x.id===kit.getAttribute("data-kit"));
+    k.members.forEach(id=>S.saved.add(id));
+    persist(); toast(`Saved the ${k.name} kit — ${k.members.length} capabilities`); refresh(); return;
+  }
+  const chip = e.target.closest(".chip");
+  if(chip){ S.q=chip.getAttribute("data-q"); $("#ask").value=S.q; renderAll(); return; }
+  const row = e.target.closest(".row[data-id]");
+  if(row && S.view==="discover"){ openDetail(row.getAttribute("data-id")); return; }
+  if(e.target.closest("#clearFacets")){
+    Object.values(S.facets).forEach(s=>s.clear()); S.regionOnly=false; renderAll(); return;
+  }
+  if(e.target.closest("#dClose") || e.target.closest("#scrim")) { closeDetail(); return; }
+  if(e.target.closest("#notesBtn")){ $("#notes").classList.add("open"); $("#notes").setAttribute("aria-hidden","false"); return; }
+  if(e.target.closest("#notesClose")){ $("#notes").classList.remove("open"); $("#notes").setAttribute("aria-hidden","true"); return; }
+  if(e.target.closest("#navDiscover")){ setView("discover"); return; }
+  if(e.target.closest("#navLibrary")){ setView("library"); return; }
+  if(e.target.closest("#facetToggle")){ $("#facets").classList.toggle("open"); return; }
+  if(e.target.closest("#openDetailMob")){ $("#detail").classList.add("open"); $("#scrim").classList.add("on"); return; }
+  if(e.target.closest("#goBtn")){ S.q=$("#ask").value; renderAll(); return; }
+});
+document.addEventListener("change", e=>{
+  const f=e.target.closest("[data-facet]");
+  if(f){
+    const g=f.getAttribute("data-facet"), v=f.getAttribute("data-v");
+    if(f.checked) S.facets[g].add(v); else S.facets[g].delete(v);
+    renderAll(); return;
+  }
+  if(e.target.id==="regionOnly"){ S.regionOnly=e.target.checked; renderAll(); return; }
+  if(e.target.id==="region"){ S.region=e.target.value; refresh(); toast(`Now showing what's live in ${S.region}`); return; }
+  if(e.target.id==="sort"){ S.sort=e.target.value; renderResults(); return; }
+});
+let typeT;
+$("#ask").addEventListener("input", e=>{
+  clearTimeout(typeT);
+  typeT=setTimeout(()=>{ S.q=e.target.value; renderAll(); }, 220);
+});
+$("#ask").addEventListener("keydown", e=>{ if(e.key==="Enter"){ clearTimeout(typeT); S.q=e.target.value; renderAll(); } });
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){ closeDetail(); $("#notes").classList.remove("open"); $("#notes").setAttribute("aria-hidden","true"); }
+});
+
+renderChips();
+renderAll();
+</script>
