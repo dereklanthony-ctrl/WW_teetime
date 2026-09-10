@@ -241,6 +241,94 @@ th.num,td.num{text-align:right}
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:90;opacity:0;pointer-events:none;transition:opacity .16s,transform .16s}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- mode switch + responsive topbar ---------- */
+.modesw{display:flex;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;flex-shrink:0}
+.modesw button{border:0;background:var(--surface);padding:6px 11px;font-size:12.5px;font-weight:500;color:var(--ink-3);white-space:nowrap}
+.modesw button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.modesw button:not([aria-pressed="true"]):hover{background:var(--surface-2);color:var(--ink)}
+@media(max-width:1180px){.who{display:none}}
+@media(max-width:940px){.topbar{height:auto;min-height:54px;flex-wrap:wrap;padding:9px 16px;gap:10px}.topbar .spacer{display:none}.nav{margin-left:0}}
+
+/* ---------- developer blocks ---------- */
+.code{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);position:relative;overflow:hidden}
+pre{margin:0;padding:11px 12px;font-family:var(--mono);font-size:11.4px;line-height:1.6;overflow-x:auto;color:var(--ink-2);white-space:pre}
+.code .copy{position:absolute;top:6px;right:6px;background:var(--surface);border:1px solid var(--line-2);border-radius:2px;padding:3px 7px;font-size:10.5px;font-family:var(--mono);color:var(--ink-3)}
+.code .copy:hover{color:var(--ink);border-color:var(--ink-3)}
+.iface{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.iface code{background:var(--surface);padding:8px 11px;font-family:var(--mono);font-size:11.6px;color:var(--ink-2);display:block;overflow-x:auto;white-space:pre}
+.iface code b{color:var(--rc);font-weight:600}
+.console .op{display:flex;gap:8px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line);background:var(--surface)}
+.console select{flex:1;border:1px solid var(--line-2);border-radius:2px;padding:5px 7px;font-family:var(--mono);font-size:11.4px;background:var(--surface);min-width:0}
+.console .send{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:2px;padding:5px 12px;font-size:12px;font-weight:600}
+.console .out{padding:0}
+.sandbox{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--warn);background:var(--warn-bg);padding:5px 11px;display:flex;justify-content:space-between;gap:10px}
+.chglog{display:flex;flex-direction:column;gap:9px}
+.chg{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:12.8px;color:var(--ink-2)}
+.chg .v{font-family:var(--mono);font-size:11.2px;color:var(--ink-3);white-space:nowrap}
+.chg.dep .v{color:var(--stop)}
+
+/* ---------- publish ---------- */
+.pub{max-width:1560px;margin:0 auto;padding:20px 20px 70px;display:grid;grid-template-columns:minmax(0,1fr) 392px;gap:22px;align-items:start}
+@media(max-width:1100px){.pub{grid-template-columns:minmax(0,1fr)}}
+.pubhead{grid-column:1/-1;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:2px}
+.pubhead h1{font-size:26px}
+.pubhead p{margin:0;color:var(--ink-3);font-size:13.5px;max-width:64ch}
+.form{display:flex;flex-direction:column;gap:16px}
+.fset{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px}
+.fset>h3{font-size:15.5px;margin-bottom:3px}
+.fset>.sub{margin:0 0 13px;font-size:12.8px;color:var(--ink-3);max-width:66ch}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:12.4px;font-weight:600;color:var(--ink-2)}
+.field .hint{font-size:11.8px;color:var(--ink-3);margin-top:-2px}
+.field input[type=text],.field textarea,.field select{border:1px solid var(--line-2);border-radius:var(--r);padding:8px 10px;background:var(--surface);font-size:13.4px;width:100%;font-family:inherit}
+.field textarea{min-height:62px;resize:vertical;line-height:1.5}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 2px color-mix(in srgb,var(--focus) 26%,transparent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.opts{display:flex;gap:6px;flex-wrap:wrap}
+.opt{border:1px solid var(--line-2);background:var(--surface);border-radius:20px;padding:5px 11px;font-size:12.4px;color:var(--ink-2)}
+.opt:hover{border-color:var(--ink-3);color:var(--ink)}
+.opt[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.opt .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.addrow{display:flex;gap:8px}
+.addrow input{flex:1;min-width:0}
+.addrow button{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:var(--r);padding:8px 14px;font-size:13px;font-weight:600;white-space:nowrap}
+.intents{display:flex;flex-direction:column;margin-top:4px}
+.intent{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.intent .ph{font-size:13.2px;color:var(--ink)}
+.intent .verdict{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.intent .verdict.win{color:var(--ok)}
+.intent .verdict.mid{color:var(--warn)}
+.intent .verdict.lose{color:var(--stop)}
+.intent .rm{background:none;border:0;color:var(--ink-3);font-size:15px;line-height:1;padding:2px 4px}
+.intent .rm:hover{color:var(--stop)}
+.dupes{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:4px}
+.dupe{background:var(--surface);padding:9px 11px;display:grid;grid-template-columns:3px minmax(0,1fr) auto;gap:9px;align-items:center;text-align:left;border:0;width:100%}
+.dupe:hover{background:var(--surface-2)}
+.dupe .rule{align-self:stretch;background:var(--rc);border-radius:1px;min-height:16px}
+.dupe .nm{font-size:13px;font-weight:600}
+.dupe .rs{font-size:11.6px;color:var(--ink-3)}
+.dupe .sim{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+.side{display:flex;flex-direction:column;gap:14px}
+@media(min-width:1101px){.side{position:sticky;top:72px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 15px}
+.panel>h3{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+.bar{height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden;margin:2px 0 12px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px;transition:width .25s}
+.score{display:flex;align-items:baseline;gap:8px}
+.score b{font-family:var(--disp);font-size:26px;font-weight:700;letter-spacing:-0.025em;font-variant-numeric:tabular-nums}
+.score span{font-size:12.5px;color:var(--ink-3)}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.checks li{display:grid;grid-template-columns:15px 1fr;gap:8px;font-size:12.7px;color:var(--ink-2);align-items:start}
+.checks li .m{font-family:var(--mono);font-size:11.5px;text-align:center}
+.checks li.no{color:var(--ink-3)}
+.checks li.no .m{color:var(--warn)}
+.checks li.yes .m{color:var(--ok)}
+.checks li.req .m{color:var(--stop)}
+.prev{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.prev .cap{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);background:var(--surface-2);padding:6px 11px;border-bottom:1px solid var(--line)}
 .hide{display:none!important}
 </style>
 
@@ -249,8 +337,13 @@ th.num,td.num{text-align:right}
   <nav class="nav">
     <button id="navDiscover" aria-current="true">Discover</button>
     <button id="navLibrary">My library<span class="count" id="libCount">4</span></button>
+    <button id="navPublish">Publish</button>
   </nav>
   <div class="spacer"></div>
+  <div class="modesw" role="group" aria-label="Catalogue lens">
+    <button id="modeBiz" aria-pressed="true">Business builder</button>
+    <button id="modeDev" aria-pressed="false">Developer</button>
+  </div>
   <div class="regionpick">
     <label for="region">Building for</label>
     <select id="region">
@@ -310,6 +403,8 @@ th.num,td.num{text-align:right}
 
 <section class="lib hide" id="libraryView"></section>
 
+<section class="pub hide" id="publishView"></section>
+
 <aside class="notes" id="notes" aria-hidden="true">
   <div class="inner">
     <button class="dclose" id="notesClose" style="position:absolute;top:16px;right:18px;display:block" aria-label="Close design notes">×</button>
@@ -352,12 +447,28 @@ th.num,td.num{text-align:right}
     </div>
 
     <div class="note">
-      <h3><span class="idx">05</span> What's real and what's staged here</h3>
+      <h3><span class="idx">05</span> One catalogue, two lenses</h3>
+      <p>Engineers and business builders want opposite things from the same listing, and splitting the catalogue in two is how you end up with two catalogues that disagree. So the <b>lens switches, the catalogue doesn't</b>: the switch in the header swaps what a row and a detail panel show, never which listings exist.</p>
+      <ul>
+        <li><b>Business lens</b> — outcomes, what you give it and get back, access state, who else uses it.</li>
+        <li><b>Developer lens</b> — the actual calls, auth and scopes, rate limits, a sandbox response, deprecations, and a snippet to paste.</li>
+      </ul>
+      <p>Deprecations belong to the developer lens and nowhere else: a business builder cannot act on a sunset date, and putting it in their view only teaches them to ignore warnings.</p>
+    </div>
+
+    <div class="note">
+      <h3><span class="idx">06</span> Publishing is where search quality is won or lost</h3>
+      <p>A catalogue is only as findable as its worst listing. The publish flow makes that visible while the owner is still typing: intents are tested against the live catalogue as they're added, and each one reports whether this listing would actually <b>win</b> that phrase or lose it to something already published.</p>
+      <p>That single check does three jobs at once — it forces plain language, it surfaces duplicates before they're built, and it turns "write good metadata" from a policy nobody reads into immediate feedback. The readiness meter treats <b>four intents as a required field</b>, on the same footing as an owner.</p>
+    </div>
+
+    <div class="note">
+      <h3><span class="idx">07</span> What's real and what's staged here</h3>
       <ul>
         <li><b>Staged:</b> semantic ranking is a curated intent + synonym map, not embeddings. Good enough to test the interaction, and honestly cheap enough to ship as v1 while you build the real index.</li>
-        <li><b>Staged:</b> the 23 listings, usage figures, and Halden Group itself are invented but structurally realistic.</li>
-        <li><b>Real:</b> the metadata model, facet set, ranking inputs, access states and page flows are what you'd implement.</li>
-        <li><b>Missing on purpose:</b> publishing/onboarding flow, chargeback, versioning and deprecation comms, and the developer-facing "try it" console — all needed, none of them the thing you asked to figure out first.</li>
+        <li><b>Staged:</b> the listings, usage figures, sandbox responses and Halden Group itself are invented but structurally realistic. The "try it" console returns a canned payload.</li>
+        <li><b>Real:</b> the metadata model, facet set, ranking inputs, access states, the two lenses, the publish readiness rules and the duplicate check are what you'd implement — the duplicate and intent checks run against the same scoring engine the search uses.</li>
+        <li><b>Missing on purpose:</b> chargeback and cost attribution, the approval workflow itself (this shows requests, not approvers' inboxes), automated harvesting from OpenAPI and schema registries, and usage telemetry feeding back into ranking.</li>
       </ul>
     </div>
   </div>
@@ -756,10 +867,11 @@ function persist(){ try{ localStorage.setItem(KEY, JSON.stringify({saved:[...S.s
 const stored = load() || {};
 const S = {
   view:"discover",
+  mode:"business",
   q:"let a bot reschedule a customer's delivery",
   sort:"match",
   region:"EMEA",
-  facets:{type:new Set(),domain:new Set(),access:new Set(),maturity:new Set(),data:new Set()},
+  facets:{type:new Set(),domain:new Set(),access:new Set(),maturity:new Set(),data:new Set(),auth:new Set()},
   regionOnly:false,
   sel:null,
   saved:new Set(stored.saved || defaults.saved),
@@ -791,6 +903,7 @@ function passes(r, skip){
   if(skip!=="access" && f.access.size && !f.access.has(l.access)) return false;
   if(skip!=="maturity" && f.maturity.size && !f.maturity.has(l.maturity)) return false;
   if(skip!=="data" && f.data.size && !f.data.has(l.dataClass)) return false;
+  if(skip!=="auth" && f.auth.size && !f.auth.has(AUTHKIND(l))) return false;
   if(skip!=="region" && S.regionOnly && !inRegion(l)) return false;
   return true;
 }
@@ -849,11 +962,19 @@ function renderFacets(){
     ${group("domain","Business area", DOMAINS.map(d=>({v:d,label:d,test:l=>l.domain===d})))}
     ${group("maturity","Maturity", Object.keys(MATURITY).map(m=>({v:m,label:MATURITY[m],test:l=>l.maturity===m})))}
     ${group("data","Data it handles", Object.keys(DATACLASS).map(d=>({v:d,label:DATACLASS[d],test:l=>l.dataClass===d})))}
+    ${S.mode==="developer" ? group("auth","Auth method", [...new Set(L.map(AUTHKIND))].map(a=>({v:a,label:a,test:l=>AUTHKIND(l)===a}))) : ""}
   `;
 }
 
 function typeLine(l){
   const s=l.spec;
+  if(S.mode==="developer"){
+    const kind = AUTHKIND(l);
+    if(l.type==="api") return `<span class="mono">${esc(s.protocol)} ${esc(s.version)}</span><span class="mono">p95 ${esc(s.p95)}</span><span>${esc(kind)}</span><span class="mono">${esc(l.dev.limit.split(" \u00b7 ")[0])}</span>`;
+    if(l.type==="agent") return `<span class="mono">${esc(l.dev.iface[0].replace(/<[^>]+>/g,"").split(" ").pop())}</span><span>${esc(kind)}</span><span class="mono">${esc(l.dev.limit.split(" \u00b7 ")[0])}</span>`;
+    if(l.type==="tool") return `<span class="mono">${esc(s.tools)}</span><span>${esc(s.transport)}</span><span>${esc(kind)}</span>`;
+    return `<span class="mono">${esc(l.dev.iface[0].replace(/<[^>]+>/g,"").replace(/^topic |^table |^store /,""))}</span><span>${esc(kind)}</span>`;
+  }
   if(l.type==="api") return `<span class="mono">${esc(s.protocol)} ${esc(s.version)}</span><span class="mono">p95 ${esc(s.p95)}</span>`;
   if(l.type==="agent") return `<span>${esc(s.autonomy)}</span><span class="mono">${esc(s.evalPass)} eval pass</span>`;
   if(l.type==="tool") return `<span class="mono">${esc(s.tools)}</span><span>${esc(s.clients)}</span>`;
@@ -943,13 +1064,7 @@ function renderDetail(){
       <ul style="margin:8px 0 0;padding-left:17px;font-size:13.2px;color:var(--ink-2)">${l.does.map(d=>`<li style="margin-bottom:3px">${esc(d)}</li>`).join("")}</ul>
     </div>
 
-    <div class="dsec">
-      <h3>Working with it</h3>
-      <div class="io">
-        <div class="iobox"><span class="eyebrow">You give it</span><ul>${l.gives.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
-        <div class="iobox"><span class="eyebrow">You get back</span><ul>${l.gets.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
-      </div>
-    </div>
+    ${S.mode==="developer" ? devInterface(l) : bizIO(l)}
 
     <div class="dsec">
       <h3>${esc(proofTitle)}</h3>
@@ -957,6 +1072,8 @@ function renderDetail(){
       <div style="height:12px"></div>
       ${typeBlock(l)}
     </div>
+
+    ${S.mode==="developer" ? devVersions(l) : ""}
 
     <div class="dsec">
       <h3>Fit &amp; governance</h3>
@@ -1066,13 +1183,14 @@ function closeDetail(){ $("#detail").classList.remove("open"); $("#scrim").class
 
 function setView(v){
   S.view=v;
-  const disc = v==="discover";
-  $("#discoverView").classList.toggle("hide",!disc);
-  $("#band").classList.toggle("hide",!disc);
-  $("#libraryView").classList.toggle("hide",disc);
-  $("#navDiscover").setAttribute("aria-current", disc?"true":"false");
-  $("#navLibrary").setAttribute("aria-current", disc?"false":"true");
-  if(disc){ renderAll(); } else { renderLibrary(); }
+  $("#discoverView").classList.toggle("hide", v!=="discover");
+  $("#band").classList.toggle("hide", v!=="discover");
+  $("#libraryView").classList.toggle("hide", v!=="library");
+  $("#publishView").classList.toggle("hide", v!=="publish");
+  $("#navDiscover").setAttribute("aria-current", v==="discover"?"true":"false");
+  $("#navLibrary").setAttribute("aria-current", v==="library"?"true":"false");
+  $("#navPublish").setAttribute("aria-current", v==="publish"?"true":"false");
+  if(v==="discover") renderAll(); else if(v==="library") renderLibrary(); else renderPublish();
   window.scrollTo({top:0,behavior:"instant"});
 }
 function renderAll(){
@@ -1081,7 +1199,7 @@ function renderAll(){
 }
 function refresh(){
   $("#libCount").textContent = S.saved.size;
-  if(S.view==="discover") renderAll(); else renderLibrary();
+  if(S.view==="discover") renderAll(); else if(S.view==="library") renderLibrary(); else renderPublish();
 }
 
 document.addEventListener("click", e=>{
@@ -1125,6 +1243,61 @@ document.addEventListener("click", e=>{
   if(e.target.closest("#notesClose")){ $("#notes").classList.remove("open"); $("#notes").setAttribute("aria-hidden","true"); return; }
   if(e.target.closest("#navDiscover")){ setView("discover"); return; }
   if(e.target.closest("#navLibrary")){ setView("library"); return; }
+  if(e.target.closest("#navPublish")){ setView("publish"); return; }
+  const md = e.target.closest("#modeBiz, #modeDev");
+  if(md){
+    S.mode = md.id==="modeDev" ? "developer" : "business";
+    $("#modeBiz").setAttribute("aria-pressed", String(S.mode==="business"));
+    $("#modeDev").setAttribute("aria-pressed", String(S.mode==="developer"));
+    S.facets.auth.clear();
+    toast(S.mode==="developer" ? "Developer lens — specs, auth, limits and deprecations" : "Business builder lens — outcomes and access");
+    refresh(); return;
+  }
+  if(e.target.closest("#tryGo")){
+    const l = byId(S.sel), n = +$("#tryOp").value;
+    const out = $("#tryOut"), ms = $("#tryMs");
+    out.textContent = "…"; ms.textContent = "…";
+    setTimeout(()=>{ out.textContent = l.dev.sample; ms.textContent = (38 + n*7 + Math.floor(Math.random()*40)) + " ms · 200 OK"; }, 280);
+    return;
+  }
+  const cp = e.target.closest("[data-copy]");
+  if(cp){
+    const txt = document.getElementById("sdk-"+cp.getAttribute("data-copy")).textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toast("Snippet copied"),()=>toast("Copy blocked by the browser"));
+    else toast("Copy blocked by the browser");
+    return;
+  }
+  const rm = e.target.closest("[data-rmintent]");
+  if(rm){ D.intents.splice(+rm.getAttribute("data-rmintent"),1); updatePub(); return; }
+  if(e.target.closest("#pAddIntent")){
+    const i = document.getElementById("pIntent"), v = i.value.trim();
+    if(!v){ toast("Type the phrase someone would search for"); return; }
+    D.intents.push(v); i.value=""; i.focus(); updatePub(); return;
+  }
+  const op = e.target.closest("[data-opt]");
+  if(op){
+    const g = op.getAttribute("data-opt"), v = op.getAttribute("data-v");
+    if(g==="region"){
+      if(D.regions.has(v)) D.regions.delete(v); else D.regions.add(v);
+      op.setAttribute("aria-pressed", String(D.regions.has(v)));
+    } else {
+      D[g]=v;
+      op.parentElement.querySelectorAll("[data-opt]").forEach(b=>b.setAttribute("aria-pressed", String(b.getAttribute("data-v")===v)));
+    }
+    updatePub(); return;
+  }
+  if(e.target.closest("#pSubmit")){
+    const r = readiness();
+    if(r.blocking){ toast(`${r.blocking} required ${r.blocking===1?"field is":"fields are"} still empty`); return; }
+    const l = draftListing();
+    l.id = "pub-"+Date.now(); l.accessNote = ACCESS[l.access].label+" — set by "+l.owner;
+    l.does = l.gets.slice();
+    L.push(l);
+    S.saved.add(l.id); persist();
+    S.q = D.intents[0]; $("#ask").value = S.q; S.sel = l.id;
+    toast(`${l.name} published — searching for "${S.q}"`);
+    setView("discover"); return;
+  }
   if(e.target.closest("#facetToggle")){ $("#facets").classList.toggle("open"); return; }
   if(e.target.closest("#openDetailMob")){ $("#detail").classList.add("open"); $("#scrim").classList.add("on"); return; }
   if(e.target.closest("#goBtn")){ S.q=$("#ask").value; renderAll(); return; }
@@ -1139,6 +1312,16 @@ document.addEventListener("change", e=>{
   if(e.target.id==="regionOnly"){ S.regionOnly=e.target.checked; renderAll(); return; }
   if(e.target.id==="region"){ S.region=e.target.value; refresh(); toast(`Now showing what's live in ${S.region}`); return; }
   if(e.target.id==="sort"){ S.sort=e.target.value; renderResults(); return; }
+  const dsel = e.target.closest("select[data-d]");
+  if(dsel){ D[dsel.getAttribute("data-d")] = dsel.value; updatePub(); return; }
+});
+let pubT;
+document.addEventListener("input", e=>{
+  const f = e.target.closest("[data-d]");
+  if(f){ D[f.getAttribute("data-d")] = f.value; clearTimeout(pubT); pubT=setTimeout(updatePub, 220); }
+});
+document.addEventListener("keydown", e=>{
+  if(e.target.id==="pIntent" && e.key==="Enter"){ e.preventDefault(); document.getElementById("pAddIntent").click(); }
 });
 let typeT;
 $("#ask").addEventListener("input", e=>{
@@ -1149,6 +1332,384 @@ $("#ask").addEventListener("keydown", e=>{ if(e.key==="Enter"){ clearTimeout(typ
 document.addEventListener("keydown", e=>{
   if(e.key==="Escape"){ closeDetail(); $("#notes").classList.remove("open"); $("#notes").setAttribute("aria-hidden","true"); }
 });
+
+/* ---------------- developer lens: interface, auth, samples ---------------- */
+const DEV = {
+"api-slot":{auth:"OAuth 2.0 client credentials · scope <b>delivery.slots</b>",limit:"600 req/min per client · burst 60/s",
+ iface:["<b>GET</b>  /v4/slots?postcode={pc}&from={date}&to={date}","<b>POST</b> /v4/slots/{slotId}/hold","<b>POST</b> /v4/bookings","<b>DELETE</b> /v4/bookings/{ref}"],
+ sdk:"const slots = await halden.delivery.slots.list({\n  postcode: '3011 AB', from: '2026-09-14', to: '2026-09-18'\n});\nawait halden.delivery.slots.hold(slots[0].id);",
+ changes:[["v4.3 · Aug 2026","Slot payload now carries depot capacity and cut-off time"],["v4.0 · Jan 2026","Holds became explicit; bookings no longer auto-reserve"],["v3 · sunset 31 Mar 2027","Migrate to v4 — mapping guide in the depot ops space"]],
+ sample:'{\n  "slots": [\n    { "id": "slt_9Q4", "start": "2026-09-15T09:00+02:00",\n      "end": "2026-09-15T11:00+02:00", "depot": "NL-RTM-02",\n      "capacityLeft": 14, "cutOff": "2026-09-14T18:00+02:00" }\n  ],\n  "nextCursor": null\n}'},
+
+"api-order":{auth:"OAuth 2.0 client credentials · scope <b>orders.read</b>",limit:"3,000 req/min per client",
+ iface:["<b>query</b> order(reference: ID!): Order","<b>query</b> ordersByCustomer(customerId: ID!): [Order!]!","<b>subscription</b> orderStageChanged(reference: ID!)"],
+ sdk:"const { order } = await halden.graphql(`\n  query { order(reference: \\\"HG-88213004\\\") {\n    stage promisedFor breachReason\n    events { at code location }\n  } }\n`);",
+ changes:[["Sep 2026","breachReason added to Order"],["Jun 2026","Split shipments merged into a single timeline"],["—","No deprecations in flight"]],
+ sample:'{\n  "order": {\n    "stage": "OUT_FOR_DELIVERY",\n    "promisedFor": "2026-09-11",\n    "breachReason": null,\n    "events": [\n      { "at": "2026-09-11T06:41+02:00", "code": "DEPOT_SCAN", "location": "NL-RTM-02" }\n    ]\n  }\n}'},
+
+"api-identity":{auth:"mTLS + OAuth 2.0 · scope <b>customer.identity</b> · purpose header required",limit:"1,200 req/min per client",
+ iface:["<b>POST</b> /v3/identity/resolve","<b>GET</b>  /v3/identity/{customerId}/consent","<b>POST</b> /v3/identity/merge-candidates"],
+ sdk:"const match = await halden.identity.resolve({\n  phone: '+31 6 1234 5678',\n  purpose: 'inbound-care-call'   // logged for the privacy office\n});",
+ changes:[["v3.2 · Jul 2026","Confidence score exposed on every match"],["v3.0 · Feb 2026","Purpose header became mandatory"],["v2 · sunset 30 Jun 2027","Migrate to v3"]],
+ sample:'{\n  "customerId": "cus_4T8QW1",\n  "confidence": 0.94,\n  "matchedOn": ["phone", "postcode"],\n  "consent": { "marketing": false, "serviceSms": true },\n  "duplicates": []\n}'},
+
+"api-address":{auth:"API key header <b>X-Halden-Key</b>",limit:"5,000 req/min per key",
+ iface:["<b>POST</b> /v2/address/normalise","<b>GET</b>  /v2/address/depot?lat={lat}&lon={lon}"],
+ sdk:"const a = await halden.address.normalise({\n  text: 'weena 505, rotterdam', country: 'NL'\n});\n// a.depot -> 'NL-RTM-02'",
+ changes:[["v2.4 · Jun 2026","Deliverability flag added for 41 countries"],["v2.0 · 2025","Depot mapping folded in from Network Planning"],["—","No deprecations in flight"]],
+ sample:'{\n  "normalised": "Weena 505, 3013 AL Rotterdam, NL",\n  "lat": 51.9244, "lon": 4.4777,\n  "deliverable": true,\n  "depot": "NL-RTM-02", "zone": "RTM-CENTRAL"\n}'},
+
+"api-refund":{auth:"mTLS + OAuth 2.0 · scope <b>payments.refund</b> · dual control over €500",limit:"120 req/min per client",
+ iface:["<b>POST</b> /v2/refunds","<b>GET</b>  /v2/refunds/{ref}","<b>POST</b> /v2/refunds/{ref}/approve"],
+ sdk:"const r = await halden.payments.refunds.create({\n  paymentRef: 'pay_7HQ2', amountMinor: 4250,\n  currency: 'EUR', reasonCode: 'GOODS_DAMAGED'\n});\n// r.status -> 'AWAITING_APPROVAL' when over €500",
+ changes:[["v2.5 · Aug 2026","Partial refunds against split captures"],["v2.0 · 2025","Approval chain moved server-side"],["—","No deprecations in flight"]],
+ sample:'{\n  "ref": "rfd_2K9ZP",\n  "status": "AWAITING_APPROVAL",\n  "approver": "controller.emea@halden.example",\n  "settlesOn": "2026-09-16",\n  "auditId": "aud_88213004"\n}'},
+
+"api-product":{auth:"OAuth 2.0 client credentials · scope <b>product.read</b>",limit:"4,000 req/min per client",
+ iface:["<b>query</b> product(sku: ID, gtin: String, market: String!): Product","<b>query</b> products(filter: ProductFilter!, first: Int): ProductConnection"],
+ sdk:"const { product } = await halden.graphql(`\n  query { product(sku: \\\"HG-40182\\\", market: \\\"NL\\\") {\n    name dimensions { mm } hazardClass approvals\n  } }\n`);",
+ changes:[["v5.1 · Sep 2026","Market approvals exposed per SKU"],["v5.0 · Mar 2026","REST retired in favour of GraphQL"],["REST v4 · sunset 31 Dec 2026","Migrate to the GraphQL schema"]],
+ sample:'{\n  "product": {\n    "name": "Halden Trail 40L Pack",\n    "dimensions": { "mm": [560, 320, 240] },\n    "hazardClass": null,\n    "approvals": ["NL", "DE", "FR", "BE"]\n  }\n}'},
+
+"api-people":{auth:"OAuth 2.0 · scope <b>people.read</b> · works council attestation in EMEA",limit:"300 req/min per client",
+ iface:["<b>GET</b> /v1/people/{employeeId}","<b>GET</b> /v1/people/by-email/{email}","<b>GET</b> /v1/people/{employeeId}/certifications"],
+ sdk:"const p = await halden.people.byEmail('rosa.okonkwo@halden.example');\n// p.certifications -> [{ code: 'FLT-B2', expires: '2027-02-28' }]",
+ changes:[["v1.6 · May 2026","Certification expiry added"],["v1.2 · 2025","Cost centre added to the person record"],["—","No deprecations in flight"]],
+ sample:'{\n  "employeeId": "E-441902",\n  "name": "Rosa Okonkwo",\n  "role": "Ops Lead",\n  "site": "NL-RTM-02",\n  "manager": "E-330871",\n  "costCentre": "CC-4410",\n  "certifications": [{ "code": "FLT-B2", "expires": "2027-02-28" }]\n}'},
+
+"api-tax":{auth:"API key header <b>X-Halden-Key</b>",limit:"2,000 req/min per key",
+ iface:["<b>POST</b> /v3/tax/resolve","<b>GET</b>  /v3/tax/rates?origin={cc}&destination={cc}&on={date}"],
+ sdk:"const t = await halden.tax.resolve({\n  productClass: 'GOODS_STANDARD',\n  origin: 'NL', destination: 'DE', on: '2026-09-11'\n});",
+ changes:[["v3.3 · Aug 2026","Historic resolution back to 2019-01-01"],["v3.0 · 2025","Reverse charge handling"],["—","No deprecations in flight"]],
+ sample:'{\n  "rate": 0.19,\n  "basis": "DE UStG §12(1)",\n  "reverseCharge": false,\n  "exempt": false,\n  "citation": "cit_DE_2026_19"\n}'},
+
+"api-sanctions":{auth:"mTLS + OAuth 2.0 · scope <b>screening.run</b> · named-user binding",limit:"60 req/min per client",
+ iface:["<b>POST</b> /v2/screening/entity","<b>GET</b>  /v2/screening/{evidenceId}","<b>POST</b> /v2/screening/{evidenceId}/adjudicate"],
+ sdk:"const s = await halden.screening.entity({\n  name: 'Zephyr Logistics Ltd', country: 'CY', type: 'COMPANY'\n});\n// s.grade -> 'AMBER'",
+ changes:[["v2.4 · Sep 2026","Vessel screening added"],["v2.1 · 2026","Evidence records retained for 7 years"],["—","No deprecations in flight"]],
+ sample:'{\n  "grade": "AMBER",\n  "hits": [\n    { "list": "EU CFSP", "score": 0.71, "reason": "name similarity, same jurisdiction" }\n  ],\n  "recommendedAction": "MANUAL_REVIEW",\n  "evidenceId": "evd_5PQ71"\n}'},
+
+"agent-resched":{auth:"Agent identity via SPIFFE · runs under <b>svc/delivery-rescheduler</b>",limit:"400 tasks/min · 1 concurrent task per order",
+ iface:["<b>POST</b> /agents/v1/delivery-rescheduler/tasks","<b>GET</b>  /agents/v1/delivery-rescheduler/tasks/{id}","<b>event</b> subscribes to delivery.exceptions.v2"],
+ sdk:"const task = await halden.agents.deliveryRescheduler.run({\n  orderRef: 'HG-88213004',\n  channel: 'sms',\n  maxCostIncrease: 0        // above this, a human approves\n});",
+ changes:[["Sep 2026","Beta widened to NA; cost guardrail configurable per caller"],["Aug 2026","Escalation path added when no window works"],["—","Beta: interface may change with 30 days' notice"]],
+ sample:'{\n  "taskId": "tsk_QW81",\n  "status": "AWAITING_APPROVAL",\n  "proposal": {\n    "newWindow": "2026-09-16T13:00+02:00/15:00+02:00",\n    "costDelta": 3.40, "customerAccepted": true\n  },\n  "approver": "depot.ops.rtm@halden.example"\n}'},
+
+"agent-dispute":{auth:"Agent identity via SPIFFE · runs under <b>svc/dispute-triage</b>",limit:"200 cases/min",
+ iface:["<b>POST</b> /agents/v1/dispute-triage/cases","<b>GET</b>  /agents/v1/dispute-triage/cases/{id}","<b>POST</b> /agents/v1/dispute-triage/cases/{id}/approve"],
+ sdk:"const c = await halden.agents.disputeTriage.submit({\n  source: 'email', body: raw, attachments: files\n});",
+ changes:[["Aug 2026","Auto-settle threshold raised to €2,000"],["May 2026","Weekly pattern report published to the O2C space"],["—","No deprecations in flight"]],
+ sample:'{\n  "caseId": "dsp_31KQ",\n  "category": "PRICE_MISMATCH",\n  "confidence": 0.88,\n  "resolution": "AUTO_SETTLED",\n  "amountMinor": 118400,\n  "evidence": ["po_88213", "grn_44192", "tax_cit_DE_2026_19"]\n}'},
+
+"agent-refund":{auth:"Agent identity via SPIFFE · runs under <b>svc/refund-advisor</b>",limit:"600 cases/min",
+ iface:["<b>POST</b> /agents/v1/refund-advisor/recommend","<b>GET</b>  /agents/v1/refund-advisor/recommendations/{id}"],
+ sdk:"const rec = await halden.agents.refundAdvisor.recommend({\n  caseId: 'case_7712', locale: 'nl-NL'\n});\n// rec.draftReply is ready for an advisor to send",
+ changes:[["Aug 2026","Draft replies localised for 14 markets"],["Jul 2026","Goodwill policy per market"],["—","Beta: interface may change with 30 days' notice"]],
+ sample:'{\n  "recommendationId": "rec_9012",\n  "owed": { "amountMinor": 2400, "currency": "EUR", "basis": "late-delivery policy 4.2" },\n  "goodwill": { "amountMinor": 500, "reason": "second failure in 30 days" },\n  "draftReply": "Beste Rosa, het spijt ons…",\n  "requiresAdvisorApproval": true\n}'},
+
+"agent-supplier":{auth:"Agent identity via SPIFFE · runs under <b>svc/supplier-onboarding</b>",limit:"40 suppliers/min",
+ iface:["<b>POST</b> /agents/v1/supplier-onboarding/start","<b>GET</b>  /agents/v1/supplier-onboarding/{id}","<b>POST</b> /agents/v1/supplier-onboarding/{id}/approve"],
+ sdk:"const s = await halden.agents.supplierOnboarding.start({\n  legalName: 'Zephyr Logistics Ltd', country: 'CY',\n  contact: 'ops@zephyr.example'\n});",
+ changes:[["Sep 2026","Pilot opened to EMEA procurement"],["Aug 2026","Document chasing schedule made configurable"],["—","Pilot: no compatibility guarantee"]],
+ sample:'{\n  "onboardingId": "onb_5521",\n  "state": "AWAITING_DOCUMENTS",\n  "collected": ["registration", "tax"],\n  "outstanding": ["insurance"],\n  "screening": { "grade": "AMBER", "evidenceId": "evd_5PQ71" },\n  "nextChase": "2026-09-13"\n}'},
+
+"agent-contract":{auth:"Agent identity via SPIFFE · runs under <b>svc/clause-reviewer</b>",limit:"80 documents/min · 40 MB max",
+ iface:["<b>POST</b> /agents/v1/clause-reviewer/reviews","<b>GET</b>  /agents/v1/clause-reviewer/reviews/{id}"],
+ sdk:"const r = await halden.agents.clauseReviewer.review({\n  file: draftPdf, playbook: 'supplier-goods-2026'\n});",
+ changes:[["Jul 2026","Playbook versioning — reviews cite the playbook revision"],["Apr 2026","Fallback wording library from Legal Ops"],["—","No deprecations in flight"]],
+ sample:'{\n  "reviewId": "rev_7781",\n  "playbook": "supplier-goods-2026.3",\n  "clauses": [\n    { "ref": "8.2", "grade": "RED", "issue": "unlimited liability",\n      "fallback": "Liability capped at 12 months of fees." }\n  ],\n  "summary": "2 red, 5 amber, 31 acceptable"\n}'},
+
+"agent-shift":{auth:"Agent identity via SPIFFE · runs under <b>svc/shift-planner</b> · country consent flag",limit:"100 gaps/min",
+ iface:["<b>POST</b> /agents/v1/shift-planner/gaps","<b>GET</b>  /agents/v1/shift-planner/gaps/{id}","<b>POST</b> /agents/v1/shift-planner/gaps/{id}/release-offers"],
+ sdk:"const g = await halden.agents.shiftPlanner.plan({\n  site: 'SG-JUR-01', shift: '2026-09-14T22:00/06:00'\n});",
+ changes:[["Sep 2026","Fatigue rules per country"],["Aug 2026","Pilot began at three APAC sites"],["—","Pilot: no compatibility guarantee"]],
+ sample:'{\n  "gapId": "gap_2210",\n  "candidates": [\n    { "employeeId": "E-441902", "score": 0.91, "certs": ["FLT-B2"], "costDelta": 0 }\n  ],\n  "blocked": [{ "employeeId": "E-330871", "reason": "rest-period rule SG-11" }],\n  "awaiting": "SITE_MANAGER_APPROVAL"\n}'},
+
+"tool-warehouse":{auth:"OAuth 2.0 on behalf of an agent identity · per-site scopes",limit:"1,000 tool calls/min per agent",
+ iface:["<b>mcp</b> https://tools.halden.example/warehouse/mcp","<b>tool</b> stock.check(sku, site)","<b>tool</b> pallet.move(palletId, toLocation)","<b>tool</b> label.reprint(shipmentId)","<b>tool</b> exception.raise(orderRef, code, note)"],
+ sdk:"{\n  \"mcpServers\": {\n    \"halden-warehouse\": {\n      \"url\": \"https://tools.halden.example/warehouse/mcp\",\n      \"auth\": { \"type\": \"oauth\", \"scopes\": [\"read:stock\", \"write:movement\"] }\n    }\n  }\n}",
+ changes:[["Aug 2026","exception.raise added; 11 tools total"],["Jun 2026","Moved to Streamable HTTP from SSE"],["SSE transport · sunset 31 Dec 2026","Repoint clients to the Streamable HTTP endpoint"]],
+ sample:'{\n  "tool": "stock.check",\n  "result": { "sku": "HG-40182", "site": "NL-RTM-02",\n    "onHand": 412, "allocated": 88, "available": 324 },\n  "actor": { "agent": "svc/delivery-rescheduler", "operator": "E-441902" }\n}'},
+
+"tool-crm":{auth:"OAuth 2.0 on behalf of an agent identity · mapped to a CRM role",limit:"600 tool calls/min per agent",
+ iface:["<b>mcp</b> https://tools.halden.example/crm/mcp","<b>tool</b> case.get(caseId)","<b>tool</b> case.update(caseId, fields)","<b>tool</b> contact.find(query)","<b>tool</b> activity.log(caseId, note)"],
+ sdk:"{\n  \"mcpServers\": {\n    \"halden-crm\": {\n      \"url\": \"https://tools.halden.example/crm/mcp\",\n      \"auth\": { \"type\": \"oauth\", \"scopes\": [\"read:case\", \"write:case\"] }\n    }\n  }\n}",
+ changes:[["Aug 2026","Field-level redaction by CRM role"],["Mar 2026","Territory scoping applied to every result"],["—","No deprecations in flight"]],
+ sample:'{\n  "tool": "case.get",\n  "result": { "caseId": "case_7712", "status": "OPEN",\n    "subject": "Delivery missed twice",\n    "contact": { "id": "cus_4T8QW1", "email": "[redacted: role]" } }\n}'},
+
+"tool-sap":{auth:"mTLS + OAuth 2.0 · finance role required · dual control on postings",limit:"120 tool calls/min per agent",
+ iface:["<b>mcp</b> https://tools.halden.example/ledger/mcp","<b>tool</b> balance.get(account, period)","<b>tool</b> document.find(query)","<b>tool</b> posting.propose(entry)","<b>tool</b> posting.approve(proposalId)"],
+ sdk:"{\n  \"mcpServers\": {\n    \"halden-ledger\": {\n      \"url\": \"https://tools.halden.example/ledger/mcp\",\n      \"auth\": { \"type\": \"oauth\", \"scopes\": [\"read:ledger\"] }\n    }\n  }\n}",
+ changes:[["Jun 2026","Nightly self-reconciliation report"],["Feb 2026","posting.propose split from posting.approve for dual control"],["—","No deprecations in flight"]],
+ sample:'{\n  "tool": "balance.get",\n  "result": { "account": "1400-TRADE-DEBTORS", "period": "2026-08",\n    "closing": { "amountMinor": 4182930055, "currency": "EUR" } },\n  "reconciliation": "matched 2026-09-10T02:14Z"\n}'},
+
+"tool-vault":{auth:"OAuth 2.0 on behalf of an agent identity · per-document entitlement",limit:"400 tool calls/min per agent",
+ iface:["<b>mcp</b> https://tools.halden.example/vault/mcp","<b>tool</b> document.search(query, filters)","<b>tool</b> document.read(documentId)","<b>tool</b> document.file(bytes, retentionClass)"],
+ sdk:"{\n  \"mcpServers\": {\n    \"halden-vault\": {\n      \"url\": \"https://tools.halden.example/vault/mcp\",\n      \"auth\": { \"type\": \"oauth\", \"scopes\": [\"read:document\"] }\n    }\n  }\n}",
+ changes:[["Aug 2026","Citations returned with every search hit"],["Jan 2026","Retention class enforced at filing time"],["—","No deprecations in flight"]],
+ sample:'{\n  "tool": "document.search",\n  "result": [\n    { "documentId": "doc_91K", "title": "Zephyr Logistics MSA 2024",\n      "score": 0.87, "cite": "p.14 §8.2", "retention": "CONTRACT_7Y" }\n  ]\n}'},
+
+"data-exceptions":{auth:"SASL/OAUTHBEARER · consumer group registration required",limit:"No quota · 30-day replay window",
+ iface:["<b>topic</b> delivery.exceptions.v2","<b>format</b> Avro · schema registry subject delivery.exceptions.v2-value","<b>keys</b> orderRef (string)","<b>partitions</b> 48"],
+ sdk:"consumer.subscribe(['delivery.exceptions.v2']);\nfor await (const msg of consumer) {\n  if (msg.value.severity === 'HIGH') await rescheduler.run(msg.value.orderRef);\n}",
+ changes:[["Aug 2026","severity field added; v1 topic retired"],["Feb 2026","Depot forecast attached to each event"],["delivery.exceptions.v1 · retired Aug 2026","Consumers must move to v2"]],
+ sample:'{\n  "orderRef": "HG-88213004",\n  "at": "2026-09-11T07:02:11Z",\n  "reasonCode": "VEHICLE_BREAKDOWN",\n  "severity": "HIGH",\n  "depot": "NL-RTM-02",\n  "depotForecast": { "recoverable": false, "nextWindow": "2026-09-16" }\n}'},
+
+"data-c360":{auth:"Warehouse role + stated purpose · row filters applied at query time",limit:"Query quota by workspace · 2 TB/day default",
+ iface:["<b>table</b> analytics.customer.c360","<b>format</b> Iceberg · partitioned by market, snapshot_date","<b>grain</b> one row per customerId","<b>lineage</b> published to the catalogue nightly"],
+ sdk:"SELECT customer_id, market, ltv_band, consent_marketing\nFROM analytics.customer.c360\nWHERE snapshot_date = current_date - 1\n  AND market = 'NL';",
+ changes:[["Sep 2026","28 attributes added from the loyalty migration"],["Jun 2026","Suppression applied before publication, not after"],["—","No deprecations in flight"]],
+ sample:'{\n  "customer_id": "cus_4T8QW1",\n  "market": "NL",\n  "ltv_band": "HIGH",\n  "orders_12m": 14,\n  "consent_marketing": false,\n  "snapshot_date": "2026-09-10"\n}'},
+
+"data-forecast":{auth:"Feature store role · online and offline reads use the same identity",limit:"20,000 online reads/s · offline unmetered",
+ iface:["<b>store</b> features.demand.v3","<b>entities</b> sku × site × horizon","<b>online</b> GET /features/v3/demand?sku=&site=&horizon=","<b>offline</b> analytics.features.demand_v3"],
+ sdk:"const f = await halden.features.demand.get({\n  sku: 'HG-40182', site: 'IT-MIL-01', horizon: 28\n});\n// point-in-time correct in training and serving",
+ changes:[["Jul 2026","12 promotion-uplift features added"],["Mar 2026","v3 guarantees train/serve parity"],["features.demand.v2 · sunset 31 Jan 2027","Feature names mapped in the migration note"]],
+ sample:'{\n  "sku": "HG-40182", "site": "IT-MIL-01", "horizon": 28,\n  "features": {\n    "trailing_28d_units": 1840,\n    "seasonality_index": 1.18,\n    "promo_uplift_expected": 0.34\n  },\n  "featureVersion": "v3.4"\n}'},
+
+"data-footfall":{auth:"SASL/OAUTHBEARER · store scope per consumer group",limit:"No quota · 14-day replay window",
+ iface:["<b>topic</b> retail.footfall.v1","<b>format</b> JSON","<b>keys</b> storeId (string)","<b>partitions</b> 12"],
+ sdk:"consumer.subscribe(['retail.footfall.v1']);\n// aggregate counts only — no individual-level records are published",
+ changes:[["Sep 2026","Zone dwell aggregates added"],["Aug 2026","Pilot opened to APAC merchandising"],["—","Pilot: schema may change with 30 days' notice"]],
+ sample:'{\n  "storeId": "SG-ORC-04",\n  "hourStart": "2026-09-10T13:00+08:00",\n  "entries": 412, "exits": 388,\n  "zones": { "entrance": 412, "apparel": 176, "checkout": 149 },\n  "tradingDay": "2026-09-10"\n}'}
+};
+L.forEach(l=>{ l.dev = DEV[l.id]; });
+const AUTHKIND = l => l.dev.auth.includes("mTLS") ? "mTLS + OAuth" : l.dev.auth.includes("SASL") ? "SASL / OAuth bearer" : l.dev.auth.includes("API key") ? "API key" : l.dev.auth.includes("SPIFFE") ? "Agent identity (SPIFFE)" : l.dev.auth.includes("Warehouse role") || l.dev.auth.includes("Feature store") ? "Warehouse role" : "OAuth client credentials";
+
+/* ---------------- developer lens: rendering ---------------- */
+function devInterface(l){
+  return `
+    <div class="dsec">
+      <h3>Interface</h3>
+      <div class="iface">${l.dev.iface.map(i=>`<code>${i}</code>`).join("")}</div>
+      <div style="height:12px"></div>
+      <dl class="kv">
+        <dt>Auth</dt><dd>${l.dev.auth}</dd>
+        <dt>Rate limit</dt><dd>${esc(l.dev.limit)}</dd>
+      </dl>
+    </div>
+    <div class="dsec">
+      <h3>Try it</h3>
+      <div class="console code">
+        <div class="op">
+          <select id="tryOp" aria-label="Operation">${l.dev.iface.map((i,n)=>`<option value="${n}">${esc(i.replace(/<[^>]+>/g,""))}</option>`).join("")}</select>
+          <button class="send" id="tryGo">Send</button>
+        </div>
+        <div class="sandbox"><span>Sandbox · canned response</span><span id="tryMs">—</span></div>
+        <div class="out"><pre id="tryOut">Press Send to see a representative response.</pre></div>
+      </div>
+    </div>`;
+}
+function bizIO(l){
+  return `
+    <div class="dsec">
+      <h3>Working with it</h3>
+      <div class="io">
+        <div class="iobox"><span class="eyebrow">You give it</span><ul>${l.gives.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+        <div class="iobox"><span class="eyebrow">You get back</span><ul>${l.gets.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      </div>
+    </div>`;
+}
+function devVersions(l){
+  return `
+    <div class="dsec">
+      <h3>Versions &amp; deprecation</h3>
+      <div class="chglog">${l.dev.changes.map(([v,t])=>{
+        const dep = /sunset|retired|deprecat|no compatibility|may change/i.test(v+" "+t);
+        return `<div class="chg ${dep?"dep":""}"><span class="v">${esc(v)}</span><span>${esc(t)}</span></div>`;
+      }).join("")}</div>
+    </div>
+    <div class="dsec">
+      <h3>Integrate</h3>
+      <div class="code"><button class="copy" data-copy="${l.id}">Copy</button><pre id="sdk-${l.id}">${esc(l.dev.sdk)}</pre></div>
+    </div>`;
+}
+
+/* ---------------- publish ---------------- */
+const D = {
+  name:"Returns Label Generator", type:"api", domain:"Customer",
+  summary:"Create a prepaid returns label for an order and email it to the customer, using the carrier that actually serves their address.",
+  gives:"Order number\nReturn reason code", gets:"A prepaid label PDF\nA tracking reference",
+  owner:"Returns Platform", ownerLoc:"Manchester", maturity:"beta", access:"approval",
+  regions:new Set(["EMEA"]), dataClass:"personal",
+  intents:["print a returns label","send a customer a returns label"]
+};
+function draftListing(){
+  const stub = {
+    api:{protocol:"REST",version:"v1",p95:"— ms",uptime:"—",vol:"— calls / day"},
+    agent:{autonomy:"Not yet stated",checkpoint:"Not yet stated",evalPass:"—",tasks:"— tasks / week",tools:"—"},
+    tool:{tools:"— tools",scopes:"—",transport:"Streamable HTTP",clients:"— agents connected"},
+    data:{shape:"—",fresh:"—",vol:"— rows / day",retain:"—"}
+  }[D.type];
+  return {
+    id:"draft", name:D.name||"Untitled capability", type:D.type, domain:D.domain,
+    summary:D.summary, does:[], gives:D.gives.split("\n").filter(Boolean), gets:D.gets.split("\n").filter(Boolean),
+    owner:D.owner||"—", ownerLoc:D.ownerLoc||"—", maturity:D.maturity, access:D.access,
+    accessNote:"Draft — not yet published", regions:[...D.regions], dataClass:D.dataClass,
+    used:0, updated:new Date().toISOString().slice(0,10),
+    intents:D.intents.slice(), tags:tokenize(D.name+" "+D.summary),
+    spec:stub, related:[],
+    dev:{auth:"Not yet stated",limit:"Not yet stated",iface:["Not yet stated"],sdk:"// not yet published",changes:[["draft","Not yet published"]],sample:"{}"}
+  };
+}
+function rankFor(phrase){
+  const t = tokenize(phrase);
+  const draft = draftListing();
+  const rows = [...L, draft].map(l=>({l, s:score(l,t).s})).filter(r=>r.s>0).sort((a,b)=>b.s-a.s);
+  const idx = rows.findIndex(r=>r.l.id==="draft");
+  return {rank: idx<0?null:idx+1, top: rows[0] ? rows[0].l : null, total: rows.length};
+}
+function duplicates(){
+  const t = tokenize(D.name+" "+D.summary+" "+D.intents.join(" "));
+  if(t.length<2) return [];
+  return L.map(l=>({l,s:score(l,t).s})).filter(r=>r.s>8).sort((a,b)=>b.s-a.s).slice(0,3);
+}
+function readiness(){
+  const c = [
+    {k:"A name and a business area", ok:!!D.name.trim(), req:true},
+    {k:"A plain-language summary — what it does, not how", ok:D.summary.trim().length>40, req:true},
+    {k:"An owning team and location", ok:!!D.owner.trim(), req:true},
+    {k:"At least four search intents", ok:D.intents.length>=4, req:true, note:"Intents are how non-engineers find you. Two is not enough."},
+    {k:"Every intent your listing actually wins", ok:D.intents.length>0 && D.intents.every(p=>{const r=rankFor(p); return r.rank && r.rank<=2;}), req:false, note:"An intent someone else already owns is a duplicate signal, not a win."},
+    {k:"What you give it and what comes back", ok:D.gives.trim()&&D.gets.trim(), req:true},
+    {k:"Access path and approver", ok:!!D.access, req:true},
+    {k:"Regions it is live in", ok:D.regions.size>0, req:true},
+    {k:"Data classification", ok:!!D.dataClass, req:true},
+    {k:"Type-specific proof of quality", ok:false, req:false, note:"Latency and uptime for an API — filled in automatically from your service registry entry."}
+  ];
+  const pct = Math.round(100*c.filter(x=>x.ok).length/c.length);
+  return {c, pct, blocking:c.filter(x=>x.req&&!x.ok).length};
+}
+function verdictFor(p){
+  const r = rankFor(p);
+  if(!r.rank) return {cls:"lose", t:"not found"};
+  if(r.rank===1) return {cls:"win", t:"rank 1 of "+r.total};
+  if(r.rank<=3) return {cls:"mid", t:"rank "+r.rank+" · "+r.top.name.split(" ")[0]+" wins"};
+  return {cls:"lose", t:"rank "+r.rank+" · buried"};
+}
+function renderIntents(){
+  const el = document.getElementById("intentList"); if(!el) return;
+  el.innerHTML = D.intents.length ? D.intents.map((p,n)=>{
+    const v = verdictFor(p);
+    return `<div class="intent"><span class="ph">&ldquo;${esc(p)}&rdquo;</span><span class="verdict ${v.cls}">${esc(v.t)}</span><button class="rm" data-rmintent="${n}" aria-label="Remove intent">&times;</button></div>`;
+  }).join("") : `<div class="intent"><span class="ph" style="color:var(--ink-3)">No intents yet — nobody will find this by describing their job.</span><span></span><span></span></div>`;
+}
+function renderPubSide(){
+  const el = document.getElementById("pubSide"); if(!el) return;
+  const r = readiness(), d = draftListing(), a = ACCESS[D.access];
+  el.innerHTML = `
+    <div class="panel">
+      <h3>Ready to publish</h3>
+      <div class="score"><b>${r.pct}%</b><span>${r.blocking? r.blocking+" required "+(r.blocking===1?"item":"items")+" left" : "nothing blocking"}</span></div>
+      <div class="bar"><i style="width:${r.pct}%;background:${r.blocking?"var(--warn)":"var(--ok)"}"></i></div>
+      <ul class="checks">${r.c.map(x=>`<li class="${x.ok?"yes":(x.req?"req":"no")}"><span class="m">${x.ok?"✓":(x.req?"!":"~")}</span><span>${esc(x.k)}${x.note&&!x.ok?`<br><span style="color:var(--ink-3);font-size:11.8px">${esc(x.note)}</span>`:""}</span></li>`).join("")}</ul>
+    </div>
+    <div class="panel">
+      <h3>How it will look in search</h3>
+      <div class="prev">
+        <div class="cap">Result row · business builder lens</div>
+        <div class="list"><article class="row" style="${tvars(D.type)}">
+          <div class="rule"></div>
+          <div class="body">
+            <div class="rtop"><span class="rname">${esc(d.name)}</span><span class="tbadge">${esc(TYPE[D.type].label)}</span></div>
+            <p class="rsum">${esc(D.summary||"No summary yet.")}</p>
+            <div class="rmeta"><span>${esc(D.domain)}</span><span>${esc(D.owner||"No owner")}</span><span>${esc(MATURITY[D.maturity])}</span><span class="mono">new</span></div>
+          </div>
+          <div class="rside">${pill(a)}</div>
+        </article></div>
+      </div>
+    </div>`;
+}
+function updatePub(){ renderIntents(); renderPubSide(); const du=document.getElementById("dupes"); if(du) du.innerHTML = dupeHtml(); }
+function dupeHtml(){
+  const d = duplicates();
+  if(!d.length) return `<p class="hint" style="margin:6px 0 0">Nothing in the catalogue looks like this yet.</p>`;
+  return d.map(({l,s})=>`<button class="dupe" style="${tvars(l.type)}" data-open="${l.id}">
+    <span class="rule"></span>
+    <span><span class="nm">${esc(l.name)}</span><br><span class="rs">${esc(TYPE[l.type].label)} · ${esc(l.owner)}</span></span>
+    <span class="sim">${s>26?"looks close":"some overlap"}</span></button>`).join("");
+}
+let pubBuilt = false;
+function renderPublish(){
+  if(pubBuilt){ updatePub(); return; }
+  pubBuilt = true;
+  const opt=(g,v,label,pressed,sw)=>`<button class="opt" data-opt="${g}" data-v="${esc(v)}" aria-pressed="${pressed}">${sw?`<span class="sw" style="background:${sw}"></span>`:""}${esc(label)}</button>`;
+  document.getElementById("publishView").innerHTML = `
+    <div class="pubhead">
+      <div><span class="eyebrow">Owner flow</span><h1>Publish a capability</h1></div>
+      <p>Six of these fields are metadata. One of them — the intents — decides whether anyone ever finds your work. The panel on the right shows what a searcher will see, and whether you actually win the phrases you claim.</p>
+    </div>
+
+    <div class="form">
+      <div class="fset">
+        <h3>What it is</h3>
+        <p class="sub">The taxonomy fields. Cheap to fill, and they drive every facet in the catalogue.</p>
+        <div class="field"><label for="pName">Name</label>
+          <input type="text" id="pName" data-d="name" value="${esc(D.name)}"></div>
+        <div class="field"><label>Kind of thing</label>
+          <div class="opts">${Object.keys(TYPE).map(t=>opt("type",t,TYPE[t].label,D.type===t,TYPE[t].c)).join("")}</div></div>
+        <div class="grid2">
+          <div class="field"><label for="pDomain">Business area</label>
+            <select id="pDomain" data-d="domain">${DOMAINS.map(d=>`<option ${D.domain===d?"selected":""}>${esc(d)}</option>`).join("")}</select></div>
+          <div class="field"><label>Maturity</label>
+            <div class="opts">${Object.keys(MATURITY).map(m=>opt("maturity",m,MATURITY[m],D.maturity===m)).join("")}</div></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="pOwner">Owning team</label>
+            <input type="text" id="pOwner" data-d="owner" value="${esc(D.owner)}"></div>
+          <div class="field"><label for="pLoc">Where that team sits</label>
+            <input type="text" id="pLoc" data-d="ownerLoc" value="${esc(D.ownerLoc)}"></div>
+        </div>
+      </div>
+
+      <div class="fset">
+        <h3>What it does, in the words of someone who isn't you</h3>
+        <p class="sub">Written for an ops lead, not a reviewer of your design doc. If it only makes sense to your team, it will only be found by your team.</p>
+        <div class="field"><label for="pSum">One-line summary</label>
+          <textarea id="pSum" data-d="summary">${esc(D.summary)}</textarea>
+          <span class="hint">Say what it achieves. Avoid the internal system name.</span></div>
+        <div class="grid2">
+          <div class="field"><label for="pGives">You give it</label>
+            <textarea id="pGives" data-d="gives">${esc(D.gives)}</textarea><span class="hint">One per line.</span></div>
+          <div class="field"><label for="pGets">You get back</label>
+            <textarea id="pGets" data-d="gets">${esc(D.gets)}</textarea><span class="hint">One per line.</span></div>
+        </div>
+      </div>
+
+      <div class="fset">
+        <h3>How people will find it</h3>
+        <p class="sub">Write the phrases someone would actually type. Each one is tested against the live catalogue as you add it — if another listing already wins that phrase, you are either duplicating it or you need a sharper claim.</p>
+        <div class="field"><label for="pIntent">Add a search intent</label>
+          <div class="addrow"><input type="text" id="pIntent" placeholder="e.g. send a customer a returns label"><button id="pAddIntent">Add</button></div></div>
+        <div class="intents" id="intentList"></div>
+      </div>
+
+      <div class="fset">
+        <h3>Possible duplicates</h3>
+        <p class="sub">Checked continuously against everything published. The most valuable thing a marketplace does is stop the fourth version of something being built.</p>
+        <div id="dupes"></div>
+      </div>
+
+      <div class="fset">
+        <h3>Who can use it</h3>
+        <p class="sub">This is what turns a catalogue entry into something a business builder can act on. Be honest about the approval path — a wrong answer here is what makes people give up.</p>
+        <div class="field"><label>Access path</label>
+          <div class="opts">${Object.keys(ACCESS).map(a=>opt("access",a,ACCESS[a].label,D.access===a)).join("")}</div></div>
+        <div class="field"><label>Live in</label>
+          <div class="opts">${R.map(r=>opt("region",r,r,D.regions.has(r))).join("")}</div></div>
+        <div class="field"><label>Data it handles</label>
+          <div class="opts">${Object.keys(DATACLASS).map(d=>opt("dataClass",d,DATACLASS[d],D.dataClass===d)).join("")}</div></div>
+      </div>
+
+      <div class="fset" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="pSubmit" style="flex:0 0 auto;padding:11px 20px">Publish to the catalogue</button>
+        <span class="hint" style="flex:1;min-width:200px">Publishing here adds it to this session's catalogue so you can search for it immediately.</span>
+      </div>
+    </div>
+
+    <aside class="side" id="pubSide"></aside>`;
+  updatePub();
+}
 
 renderChips();
 renderAll();
